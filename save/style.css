@@ -1,0 +1,71 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box; /* Include padding in element's total width and height */
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 900px; /* Limit width for better readability */
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 5px;
+}
+
+h2 {
+    color: #666;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-weight: normal;
+}
+
+.button-group button {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 10px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.button-group button:hover {
+    background-color: #0056b3;
+}
+
+#embeddedAppContainer {
+    margin-top: 30px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden; /* Hide overflow content */
+    background-color: #eee; /* Background for the iframe container */
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+#embeddedAppFrame {
+    width: 100%;
+    min-height: 500px; /* Adjust as needed */
+    display: block; /* Remove extra space below iframe */
+    background-color: #fff; /* White background for the iframe content */
+}
+
+/* Utility class to hide/show the container */
+.hidden {
+    display: none;
+}
