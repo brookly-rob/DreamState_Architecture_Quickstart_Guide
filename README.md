@@ -65,7 +65,7 @@ This project aims to simplify the process of engaging with complex AI-driven wor
 
 ## Getting Started
 
-To use the Dreamstate Architecture UI, simply open the `index.html` file in your web browser. No local server is required as it's a static client-side application.
+The easiest way to use this is https://brookly-rob.github.io/DreamState_Architecture_Quickstart_Guide/ 
 
 ### File Structure
 
