@@ -1,4 +1,4 @@
-# Dreamstate Architecture UI
+# Dreamstate Architecture Quick Start Guide
 
 ## Introduction
 
