@@ -23034,7 +23034,7 @@
       }
     }
   },
-  "isPrestigeMode": true,
+  "isPrestigeMode": false,
   "triadTitle": "Echo",
   "compiledBy": "Brooklyn"
 }
