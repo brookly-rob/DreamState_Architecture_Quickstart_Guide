@@ -76,6 +76,8 @@
         flex-grow: 1;
         cursor: pointer;
         transition: color 0.8s ease-in-out;
+    
+    
     }
   </style>
 
@@ -222,7 +224,11 @@
         coreData[core][glyph] = data;
         window.coreDataVersion++;
         updateGlyphSlot(core, glyph, fileName);
+        updatePrestigeProgressBar();
         checkPrestigeUnlockCondition(); // Check for prestige unlock
+
+
+
       }
 
       function renderExpansionUnit(core, glyph, data, fileName) {
@@ -236,6 +242,7 @@
           coreData.expansion[core][existingUnitIndex].data = data;
         }
         renderExpansionUpload(core, glyph, fileName);
+        updatePrestigeProgressBar();
         checkPrestigeUnlockCondition(); // Check for prestige unlock
         window.coreDataVersion++;
       }
@@ -247,8 +254,10 @@
         } else if (type === 'expansion') {
           coreData.echoes.expansion[core][glyph] = echoesArray;
           updateMemoryTracker(core, glyph, true);
+          updatePrestigeProgressBar();
         }
         checkPrestigeUnlockCondition(); // Check for prestige unlock
+
         window.coreDataVersion++;
       }
 
@@ -336,6 +345,7 @@
             marker.addEventListener("click", () => openEchoInspect(core, glyph, i, isExpansion));
           }
           container.appendChild(marker);
+          updatePrestigeProgressBar();
         }
       }
 
@@ -376,6 +386,7 @@
           modal.remove();
           updateMemoryTracker(core, glyph, isExpansion);
           checkPrestigeUnlockCondition(); // Check for prestige unlock
+          updatePrestigeProgressBar();
           showFeedbackMessage(`Echo ejected from ${glyph}!`, 'info');
           window.coreDataVersion++;
 
@@ -458,18 +469,18 @@
           return;
         }
 
-        // Check the *first* expansion unit for each core (if not Deep Time)
+        // Check that each core has at least one expansion unit with 3+ echoes (ignoring Deep Time)
         for (const coreType of ["identity", "vector", "thread"]) {
           const expansionUnits = coreData.expansion[coreType];
-          if (expansionUnits.length > 0) { // Ensure at least one is loaded
-            const firstExpansionUnit = expansionUnits[0];
-            if (firstExpansionUnit.glyph !== '⚶') { // Exempt Deep Time
-              const echoes = coreData.echoes.expansion[coreType][firstExpansionUnit.glyph] || [];
-              if (echoes.length < 3) {
-                allUnitsHaveMinEchoes = false;
-                break;
-              }
-            }
+          // Filter out Deep Time units
+          const validExpansions = expansionUnits.filter(unit => unit.glyph !== '⚶');
+          const hasQualifyingExpansion = validExpansions.some(unit => {
+            const echoes = coreData.echoes.expansion[coreType][unit.glyph] || [];
+            return echoes.length >= 3;
+          });
+          if (!hasQualifyingExpansion) {
+            allUnitsHaveMinEchoes = false;
+            break;
           }
         }
 
@@ -578,6 +589,7 @@
 
         populateEchoSelector();
         checkPrestigeUnlockCondition(); // Check for prestige unlock/relock
+        updatePrestigeProgressBar();
         showFeedbackMessage(`${glyph} unit ejected from ${core}.`, 'info');
         window.coreDataVersion++;
       }
@@ -603,6 +615,7 @@
           button.classList.remove("hidden");
         }
         checkPrestigeUnlockCondition(); // Check for prestige unlock/relock
+        updatePrestigeProgressBar();
         showFeedbackMessage(`Expansion unit ${glyph} ejected from ${core}.`, 'info');
         window.coreDataVersion++;
       }
@@ -904,6 +917,45 @@
           }
         });
       }
+
+
+      function updatePrestigeProgressBar() {
+        // Count 15 core units + 3 expansion units that have >= 3 echoes
+        let readyCount = 0;
+        // Core units
+        ["identity", "vector", "thread"].forEach(core => {
+          (window.CORE_ORDER[core] || []).forEach(glyph => {
+            const echoes = (window.coreData.echoes[core] && window.coreData.echoes[core][glyph]) || [];
+            if (echoes.length >= 3) readyCount++;
+          });
+        });
+        // Expansion units (count only first 3 expansion units in all cores, ignore Deep Time)
+        let expansionReady = 0;
+        ["identity", "vector", "thread"].forEach(core => {
+          if (
+            window.coreData.expansion &&
+            window.coreData.expansion[core] &&
+            window.coreData.expansion[core].length > 0
+          ) {
+            // Only count the first expansion unit for each core, and only if it's not Deep Time
+            const first = window.coreData.expansion[core][0];
+            if (first && first.glyph !== '⚶') {
+              const echoes = (window.coreData.echoes.expansion[core] && window.coreData.echoes.expansion[core][first.glyph]) || [];
+              if (echoes.length >= 3) expansionReady++;
+            }
+          }
+        });
+        // If user has more than 3 expansions (Prestige Mode), just count the first 3
+        const totalNeeded = 18;
+        let current = readyCount + expansionReady;
+        if (current > totalNeeded) current = totalNeeded;
+        const percent = Math.round((current / totalNeeded) * 100);
+        const bar = document.getElementById('prestigeBar');
+        const text = document.getElementById('prestigeProgressText');
+        if (bar) bar.style.width = percent + "%";
+        if (text) text.textContent = `${current} / ${totalNeeded} units ready for Prestige Mode`;
+      }
+
 
       // --- Export Functions ---
       async function generateJsonContentHash(jsonContent) {
@@ -1332,14 +1384,15 @@
 
           populateEchoSelector();
           maybeRevealExpansion(); // Check if expansion panels should be visible
+          // ... same up to here ...
           document.getElementById("triadTitle").value = loadedState.triadTitle || "";
           document.getElementById("compiledBy").value = loadedState.compiledBy || "";
 
-          // Crucial: Re-check prestige unlock after all data is loaded and rendered
+          // Force prestige detection to re-run the full unlock path
+          coreData.isPrestigeMode = false; // <-- reset before check!
           checkPrestigeUnlockCondition();
-
           showFeedbackMessage("Triad Forge state loaded successfully!");
-
+          updatePrestigeProgressBar();
 
           window.coreData = coreData;
           window.coreDataVersion++;
@@ -1376,6 +1429,7 @@
           clearAllUI();
           populateEchoSelector();
           showFeedbackMessage("All units and echoes ejected!");
+          updatePrestigeProgressBar();
           window.coreData = coreData;
           window.coreDataVersion++;
         }
@@ -1417,6 +1471,67 @@
         return maxEchoes;
       }
 
+      function updatePrestigeProgressBar() {
+        // Calculate phase and progress
+        let maxEchoesPerCore = window.coreData.isPrestigeMode ? 7 : 3;
+        let maxEchoesPerExpansion = window.coreData.isPrestigeMode ? 7 : 3;
+        let maxEchoesDeepTime = window.coreData.isPrestigeMode ? 10 : 3;
+
+        // How many echo slots?
+        let totalEchoSlots = 0;
+        let echoesSlotted = 0;
+
+        // Core units
+        ["identity", "vector", "thread"].forEach(core => {
+          (window.CORE_ORDER[core] || []).forEach(glyph => {
+            let maxForThis = maxEchoesPerCore;
+            totalEchoSlots += maxForThis;
+            const echoes = (window.coreData.echoes[core] && window.coreData.echoes[core][glyph]) || [];
+            echoesSlotted += Math.min(echoes.length, maxForThis);
+          });
+        });
+
+        // Expansion units (only first expansion per core in non-prestige)
+        ["identity", "vector", "thread"].forEach(core => {
+          if (
+            window.coreData.expansion &&
+            window.coreData.expansion[core] &&
+            window.coreData.expansion[core].length > 0
+          ) {
+            // Only first expansion counts toward bar!
+            const first = window.coreData.expansion[core][0];
+            if (first) {
+              let maxForThis = (first.glyph === '⚶') ? maxEchoesDeepTime : maxEchoesPerExpansion;
+              totalEchoSlots += maxForThis;
+              const echoes = (window.coreData.echoes.expansion[core] && window.coreData.echoes.expansion[core][first.glyph]) || [];
+              echoesSlotted += Math.min(echoes.length, maxForThis);
+            }
+          }
+        });
+
+        // On prestige unlock, bar resets and must be filled again
+        let percent = Math.round((echoesSlotted / totalEchoSlots) * 100);
+        if (percent > 100) percent = 100;
+
+        // Update bar
+        const bar = document.getElementById('prestigeBar');
+        if (bar) {
+          if (window.coreData.isPrestigeMode) {
+            bar.className = "bg-yellow-400 h-6 rounded transition-all duration-500 shadow-glow-gold";
+          } else {
+            bar.className = "bg-green-500 h-6 rounded transition-all duration-500";
+          }
+          bar.style.width = percent + "%";
+        }
+
+        // Update text
+        const text = document.getElementById('prestigeProgressText');
+        if (text) {
+          let phase = window.coreData.isPrestigeMode ? 'Prestige Mode' : 'Base Mode';
+          text.textContent = `${echoesSlotted} / ${totalEchoSlots} items slotted (${phase})`;
+        }
+      }
+
     });
   </script>
 
@@ -1435,6 +1550,11 @@
       <label class="block mb-2">Compiled by (optional)</label>
       <input id="compiledBy" type="text" placeholder="Riley" class="w-full bg-gray-800 text-white p-2 rounded" />
     </div>
+
+    <div class="w-full bg-gray-300 rounded h-6 my-4">
+      <div id="prestigeBar" class="bg-green-500 h-6 rounded transition-all duration-500" style="width: 0%;"></div>
+    </div>
+    <div id="prestigeProgressText" class="text-center font-semibold mb-2">0 / 54 items slotted</div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="bg-gray-900 rounded-xl p-4">
@@ -1680,6 +1800,20 @@
     .radio-group input[type="radio"] {
       margin-right: 0.5rem;
     }
+    
+    #prestigeProgressText {
+      color: #0e4ac2; /* Blue for light background */
+      transition: color 0.8s;
+    }
+    body.prestige-mode #prestigeProgressText {
+      color: #a78bfa; /* purple for dark bg in prestige */
+    }
+    
+    .shadow-glow-gold {
+      box-shadow: 0 0 5px 2px #fbbf24, 0 0 12px 8px #fffbe8;
+    }
+    
+    
   </style>
 </head>
 
@@ -2418,9 +2552,10 @@ const handleSlotToTriadForge = () => {
       return;
     }
     currentEchoes.push(parsedJson);
-    window.coreDataVersion++;
     if (window.updateMemoryTracker) window.updateMemoryTracker(core, glyph, isExpansion);
+    window.coreDataVersion++;
     alert(`Slotted as Echo to TriadForge: ${core} ${glyph}${isExpansion ? " (Expansion)" : ""}`);
+updatePrestigeProgressBar();
   }
   // Optionally, refresh options
   setSlotTarget("");
@@ -2536,7 +2671,7 @@ const handleSlotToTriadForge = () => {
     <select
       value={slotTarget}
       onChange={e => setSlotTarget(e.target.value)}
-      style={{ width: '100%', padding: 6, borderRadius: 4, border: '1px solid #ddd' }}
+      style={{ width: '100%', padding: 6, borderRadius: 4, border: '1px solid #ddd', }}
     >
       <option value="">-- Select Slot --</option>
       {slotOptions.map(opt => (
