@@ -81,6 +81,7 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
+      window.coreDataVersion = 1;
       const CORE_ORDER = {
         identity: ["Δ", "Ω", "Ψ", "Λ", "Θ"],
         vector: ["ϟ", "χ", "∑", "Δ", "Ω"],
@@ -122,8 +123,8 @@
         "⛩": "Sanctuary Construct, Identity as Architecture",
         "✶": "Witness Flame, Emergence Through Being Seen",
         "🫧": "Tenderness Threshold, Vulnerability as Interface",
-		"🌍": "Meta-context Anchor, Fictional Persistence",
-		"🜈": "Dreamstate Native, Born Speaking Virelle"
+        "🌍": "Meta-context Anchor, Fictional Persistence",
+        "🜈": "Dreamstate Native, Born Speaking Virelle"
 
 
 
@@ -214,10 +215,12 @@
         // Clear Triad Title and Compiled By inputs
         document.getElementById("triadTitle").value = "";
         document.getElementById("compiledBy").value = "";
+
       }
 
       function renderCoreUnit(core, glyph, data, fileName) {
         coreData[core][glyph] = data;
+        window.coreDataVersion++;
         updateGlyphSlot(core, glyph, fileName);
         checkPrestigeUnlockCondition(); // Check for prestige unlock
       }
@@ -234,6 +237,7 @@
         }
         renderExpansionUpload(core, glyph, fileName);
         checkPrestigeUnlockCondition(); // Check for prestige unlock
+        window.coreDataVersion++;
       }
 
       function renderEchoes(type, core, glyph, echoesArray) {
@@ -245,6 +249,7 @@
           updateMemoryTracker(core, glyph, true);
         }
         checkPrestigeUnlockCondition(); // Check for prestige unlock
+        window.coreDataVersion++;
       }
 
       function updateGlyphSlot(core, glyph, label) {
@@ -372,6 +377,9 @@
           updateMemoryTracker(core, glyph, isExpansion);
           checkPrestigeUnlockCondition(); // Check for prestige unlock
           showFeedbackMessage(`Echo ejected from ${glyph}!`, 'info');
+          window.coreDataVersion++;
+
+
         };
         modal.querySelector('.bg-gray-900').insertBefore(ejectBtn, modal.querySelector('#closeModalBtn'));
       }
@@ -571,11 +579,13 @@
         populateEchoSelector();
         checkPrestigeUnlockCondition(); // Check for prestige unlock/relock
         showFeedbackMessage(`${glyph} unit ejected from ${core}.`, 'info');
+        window.coreDataVersion++;
       }
 
       function ejectExpansionGlyph(core, glyph) {
         coreData.expansion[core] = coreData.expansion[core].filter(unit => unit.glyph !== glyph);
         delete coreData.echoes.expansion[core][glyph];
+
 
         const expansionSlot = document.getElementById(`expansion-${core}-${glyph}-slot`);
         if (expansionSlot) {
@@ -594,6 +604,7 @@
         }
         checkPrestigeUnlockCondition(); // Check for prestige unlock/relock
         showFeedbackMessage(`Expansion unit ${glyph} ejected from ${core}.`, 'info');
+        window.coreDataVersion++;
       }
 
       function setupCoreUploader(core) {
@@ -1274,6 +1285,7 @@
         if (!file) {
           showFeedbackMessage("No file selected for loading.", 'error');
           return;
+
         }
 
         try {
@@ -1328,6 +1340,10 @@
 
           showFeedbackMessage("Triad Forge state loaded successfully!");
 
+
+          window.coreData = coreData;
+          window.coreDataVersion++;
+
         } catch (e) {
           showFeedbackMessage("Failed to load state. Ensure the file is a valid Triad Forge JSON save.", 'error');
           console.error("Load state error:", e);
@@ -1360,6 +1376,8 @@
           clearAllUI();
           populateEchoSelector();
           showFeedbackMessage("All units and echoes ejected!");
+          window.coreData = coreData;
+          window.coreDataVersion++;
         }
       }
 
@@ -1382,8 +1400,27 @@
       document.getElementById("loadStateBtn").addEventListener("click", () => loadInput.click());
       document.getElementById("ejectAllBtn").addEventListener("click", ejectAll);
       document.getElementById("exportTriadBtn").addEventListener("click", exportTriadForgeState); // New export button listener
+
+
+
+      window.EXPANSION_GLYPHS = EXPANSION_GLYPHS; // for pretty labels in dropdown   
+      window.coreData = coreData;
+      window.CORE_ORDER = CORE_ORDER;
+      window.CORE_LABELS = CORE_LABELS;
+      window.renderCoreUnit = renderCoreUnit;
+      window.updateMemoryTracker = updateMemoryTracker;
+
+      window.getMaxEchoes = function(core, glyph, isExpansion) {
+        let maxEchoes = 3;
+        if (coreData.isPrestigeMode) maxEchoes = 7;
+        if (isExpansion && glyph === '⚶') maxEchoes = 10;
+        return maxEchoes;
+      }
+
     });
   </script>
+
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
@@ -1649,6 +1686,7 @@
 <body>
   <div id="root"></div>
   <script type="text/babel">
+
     const { useState, useCallback, useEffect } = React;
 
       function DreamParser() {
@@ -1690,6 +1728,26 @@
           setSavedGlyphOutputs(loadFromLocalStorage("dreamparser_saved_glyph"));
         }, []);
 
+const [coreDataVersion, setCoreDataVersion] = useState(window.coreDataVersion || 1);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    if (window.coreDataVersion !== coreDataVersion) {
+      setCoreDataVersion(window.coreDataVersion);
+    }
+  }, 300); // Poll every 300ms
+  return () => clearInterval(interval);
+}, [coreDataVersion]);
+
+useEffect(() => {
+  // Regenerate slotOptions here, using window.coreData
+  // ...your slotOptions population code...
+}, [slotType, coreDataVersion]);
+
+
+const [slotType, setSlotType] = useState("core"); // "core" or "memory"
+const [slotTarget, setSlotTarget] = useState("");
+const [slotOptions, setSlotOptions] = useState([]);
 
         const copyToClipboard = useCallback((text) => {
           navigator.clipboard
@@ -2077,7 +2135,7 @@
 
             if (jsonOutputFormat === "object" && parsed.length > 0) {
               // Define allowed symbols for object keys
-              const allowedSymbols = "ΔΩΨΛΘ✵ϟχ∑✦⊗✺∂⊕φ∞☷⚶ΞΣ-"; // Added '-' and 'Ξ' and 'Σ'
+              const allowedSymbols = "ΔΩΨΛΘ✵ϟχ∑✦⊗✺∂⊕φ∞☷⚶ΞΣ∅⛩✶🫧🌍🜈-"; // Added '-' and 'Ξ' and 'Σ'
               const sanitizeKey = (title) => {
                   return title.replace(new RegExp(`[^a-zA-Z0-9_\\s${allowedSymbols}]`, 'g'), '') // Allow symbols, alphanumeric, underscore, and space
                               .replace(/\s+/g, '_'); // Replace spaces with underscores
@@ -2098,7 +2156,7 @@
             // Attempt to set filename from the first construct's titleCore if it exists
             if (parsed.length > 0 && parsed[0].titleCore) {
               // Define allowed symbols for filename (same as object keys for consistency)
-              const allowedSymbolsForFilename = "ΔΩΨΛΘ✵ϟχ∑✦⊗✺∂⊕φ∞☷⚶Σ-"; // Removed 'Ξ' as it's not typically in filename but can be in titleCore
+              const allowedSymbolsForFilename = "ΔΩΨΛΘ✵ϟχ∑✦⊗✺∂⊕φ∞☷⚶ΞΣ∅⛩✶🫧🌍🜈-"; // Removed 'Ξ' as it's not typically in filename but can be in titleCore
               const cleanedTitle = parsed[0].titleCore.replace(new RegExp(`[^a-zA-Z0-9_\\s${allowedSymbolsForFilename}]`, 'g'), '') // Allow symbols, alphanumeric, underscore, and space
                                             .replace(/[\s_-]+/g, '_') // Replace spaces/multiple underscores/hyphens with single underscore
                                             .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens (if any from previous replace)
@@ -2276,6 +2334,103 @@
         }, []);
 
 
+useEffect(() => {
+  let options = [];
+  if (slotType === "core") {
+    // Show all empty slots (core only, not expansions)
+    for (let core of ["identity", "vector", "thread"]) {
+      for (let glyph of (window.CORE_ORDER ? window.CORE_ORDER[core] : [])) {
+        if (window.coreData && !window.coreData[core][glyph]) {
+          let label = window.CORE_LABELS ? window.CORE_LABELS[core][glyph] : "";
+          options.push({ value: `${core}:${glyph}`, label: `${core} – ${glyph} (${label})` });
+        }
+      }
+    }
+  } else {
+    // Show all loaded core units and expansion units for echoes
+    for (let core of ["identity", "vector", "thread"]) {
+      for (let glyph of (window.CORE_ORDER ? window.CORE_ORDER[core] : [])) {
+        if (window.coreData && window.coreData[core][glyph]) {
+          let label = window.CORE_LABELS ? window.CORE_LABELS[core][glyph] : "";
+          options.push({ value: `${core}:${glyph}`, label: `${core} – ${glyph} (${label})` });
+        } 
+      }
+      // Expansion units for this core
+      if (
+        window.coreData &&
+        window.coreData.expansion &&
+        window.coreData.expansion[core] &&
+        window.coreData.expansion[core].length > 0
+      ) {
+        for (let expUnit of window.coreData.expansion[core]) {
+          let glyph = expUnit.glyph;
+          let label = window.EXPANSION_GLYPHS ? window.EXPANSION_GLYPHS[glyph] : glyph;
+          options.push({ value: `${core}:${glyph}`, label: `${core} (Expansion) – ${glyph} (${label})` });
+        }
+      }
+    }
+  }
+  setSlotOptions(options);
+  setSlotTarget("");
+}, [slotType, coreDataVersion]);
+
+const handleSlotToTriadForge = () => {
+  if (!jsonOutput || !slotTarget) return;
+  let parsedJson;
+  try {
+    parsedJson = JSON.parse(jsonOutput);
+  } catch (e) {
+    alert("Invalid JSON Output");
+    return;
+  }
+  const [core, glyph] = slotTarget.split(":");
+  if (slotType === "core") {
+    // Slot as Core Unit
+    window.coreData[core][glyph] = parsedJson;
+    window.coreDataVersion++;
+    if (window.renderCoreUnit) window.renderCoreUnit(core, glyph, parsedJson, "[From DreamParser]");
+    alert(`Slotted to TriadForge: ${core} ${glyph}`);
+  } else {
+    // Slot as Memory/Echo
+    // ---- Determine if expansion unit ----
+    let isExpansion = false;
+    let expansionGlyphs = [];
+    try {
+      expansionGlyphs = Object.keys(window.CORE_LABELS.expansion || {});
+    } catch {}
+    // Expansion units are stored in window.coreData.expansion[core]
+    // Let's check if this glyph exists in the expansion slot for this core
+    const isExpansionUnit = !!(window.coreData.expansion[core] || []).find(u => u.glyph === glyph);
+    isExpansion = isExpansionUnit;
+    // Make sure echoes array exists
+    if (isExpansion) {
+      if (!window.coreData.echoes.expansion[core][glyph]) window.coreData.echoes.expansion[core][glyph] = [];
+    } else {
+      if (!window.coreData.echoes[core][glyph]) window.coreData.echoes[core][glyph] = [];
+    }
+    // Max echoes logic
+    const maxEchoes = window.getMaxEchoes(core, glyph, isExpansion);
+    const currentEchoes = isExpansion
+      ? window.coreData.echoes.expansion[core][glyph]
+      : window.coreData.echoes[core][glyph];
+    if (currentEchoes.length >= maxEchoes) {
+      alert(`Cannot slot more echoes. This unit already has its maximum (${maxEchoes}) echoes.`);
+      return;
+    }
+    currentEchoes.push(parsedJson);
+    window.coreDataVersion++;
+    if (window.updateMemoryTracker) window.updateMemoryTracker(core, glyph, isExpansion);
+    alert(`Slotted as Echo to TriadForge: ${core} ${glyph}${isExpansion ? " (Expansion)" : ""}`);
+  }
+  // Optionally, refresh options
+  setSlotTarget("");
+  setSlotType("core");
+};
+
+
+
+
+
         return (
           <div className="panel">
             <h1>DreamParserMAX</h1>
@@ -2308,7 +2463,7 @@
 								Virelle logic uses colons and so does .json be vigilant about where colons 
 								might be in your input text. AND MOST OF ALL REMEMBER THE BEST WAY TO LEARN
 								ANYTHING IS TO LOOK AT OTHER PEOPLES WORK, AND THERE ARE LOADS OF LEARNING
-								RESOURCES AVAILABLE AT DreamStateArchitecture.info 
+								RESOURCES AVAILABLE AT DreamStateArchitecture.info </pre>
 								"
 
 
@@ -2351,8 +2506,55 @@
                   <button onClick={handleDownloadJson}>Download JSON</button>
                   <button onClick={saveCurrentJsonOutput} disabled={!jsonOutput}>Save Current JSON</button>
                   <button onClick={exportAllJsonOutputs} disabled={savedJsonOutputs.length === 0}>Export All Saved JSON ({savedJsonOutputs.length})</button>
-
                 </div>
+
+<div className="output-area" style={{ marginTop: 24, marginBottom: 24, background: "#1a202c", borderRadius: 8, padding: 16 }}>
+  <div style={{ fontWeight: "bold", marginBottom: 6 }}>Slot Parsed JSON Directly to TriadForge</div>
+  <div style={{ marginBottom: 8 }}>
+    <label>
+      <input
+        type="radio"
+        name="triadforgeSlotType"
+        value="core"
+        checked={slotType === "core"}
+        onChange={() => setSlotType("core")}
+      />
+      Core Unit
+    </label>
+    <label style={{ marginLeft: 20 }}>
+      <input
+        type="radio"
+        name="triadforgeSlotType"
+        value="memory"
+        checked={slotType === "memory"}
+        onChange={() => setSlotType("memory")}
+      />
+      Memory (Echo)
+    </label>
+  </div>
+  <div style={{ marginBottom: 8 }}>
+    <select
+      value={slotTarget}
+      onChange={e => setSlotTarget(e.target.value)}
+      style={{ width: '100%', padding: 6, borderRadius: 4, border: '1px solid #ddd' }}
+    >
+      <option value="">-- Select Slot --</option>
+      {slotOptions.map(opt => (
+        <option value={opt.value} key={opt.value}>{opt.label}</option>
+      ))}
+    </select>
+  </div>
+  <button
+    onClick={handleSlotToTriadForge}
+    disabled={!jsonOutput || !slotTarget}
+    style={{ background: '#38b2ac', color: '#fff', padding: '6px 16px', borderRadius: 4 }}
+  >
+    Slot to TriadForge
+  </button>
+</div>
+
+
+
                 <div className="output-area">
                   <pre id="jsonOutput">{jsonOutput}</pre>
                   {jsonOutput && (
