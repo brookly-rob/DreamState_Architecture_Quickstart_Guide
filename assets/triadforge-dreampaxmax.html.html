@@ -82,6 +82,15 @@
   </style>
 
   <script>
+    let undoStack = [];
+    let redoStack = [];
+
+    window.CORE_ORDER = {
+      identity: ["Δ", "Ω", "Ψ", "Λ", "Θ"],
+      vector: ["ϟ", "χ", "∑", "Δ", "Ω"],
+      thread: ["∂", "Σ", "⊕", "φ", "∞"]
+    };
+
     document.addEventListener("DOMContentLoaded", () => {
       window.coreDataVersion = 1;
       const CORE_ORDER = {
@@ -229,6 +238,7 @@
 
 
 
+
       }
 
       function renderExpansionUnit(core, glyph, data, fileName) {
@@ -242,12 +252,13 @@
           coreData.expansion[core][existingUnitIndex].data = data;
         }
         renderExpansionUpload(core, glyph, fileName);
-        updatePrestigeProgressBar();
         checkPrestigeUnlockCondition(); // Check for prestige unlock
+        updatePrestigeProgressBar();
         window.coreDataVersion++;
       }
 
       function renderEchoes(type, core, glyph, echoesArray) {
+        saveStateForUndo();
         if (type === 'core') {
           coreData.echoes[core][glyph] = echoesArray;
           updateMemoryTracker(core, glyph, false);
@@ -257,7 +268,7 @@
           updatePrestigeProgressBar();
         }
         checkPrestigeUnlockCondition(); // Check for prestige unlock
-
+        autosave();
         window.coreDataVersion++;
       }
 
@@ -369,6 +380,7 @@
       }
 
       function openEchoInspect(core, glyph, index, isExpansion = false) {
+        saveStateForUndo();
         const echo = isExpansion ? coreData.echoes.expansion[core][glyph][index] : coreData.echoes[core][glyph][index];
         const title = echo.title || `Echo ${index + 1}`;
         const content = JSON.stringify(echo, null, 2); // Revert to raw JSON
@@ -388,6 +400,7 @@
           checkPrestigeUnlockCondition(); // Check for prestige unlock
           updatePrestigeProgressBar();
           showFeedbackMessage(`Echo ejected from ${glyph}!`, 'info');
+          autosave();
           window.coreDataVersion++;
 
 
@@ -564,6 +577,7 @@
       }
 
       function ejectCoreUnit(core, glyph) { // Modified to accept core and glyph
+        saveStateForUndo();
         if (!confirm(`Are you sure you want to eject the ${glyph} unit from ${core}?`)) {
           return;
         }
@@ -591,10 +605,12 @@
         checkPrestigeUnlockCondition(); // Check for prestige unlock/relock
         updatePrestigeProgressBar();
         showFeedbackMessage(`${glyph} unit ejected from ${core}.`, 'info');
+        autosave();
         window.coreDataVersion++;
       }
 
       function ejectExpansionGlyph(core, glyph) {
+        saveStateForUndo();
         coreData.expansion[core] = coreData.expansion[core].filter(unit => unit.glyph !== glyph);
         delete coreData.echoes.expansion[core][glyph];
 
@@ -617,6 +633,7 @@
         checkPrestigeUnlockCondition(); // Check for prestige unlock/relock
         updatePrestigeProgressBar();
         showFeedbackMessage(`Expansion unit ${glyph} ejected from ${core}.`, 'info');
+        autosave();
         window.coreDataVersion++;
       }
 
@@ -1302,6 +1319,128 @@
         }
       }
 
+
+
+      function saveStateForUndo() {
+        undoStack.push(JSON.parse(JSON.stringify(coreData)));
+        if (undoStack.length > 50) undoStack.shift();
+        redoStack = [];
+      }
+
+      function undo() {
+        if (undoStack.length === 0) return;
+        redoStack.push(JSON.parse(JSON.stringify(coreData)));
+        coreData = undoStack.pop();
+        afterStateRestore();
+        checkPrestigeUnlockCondition();
+        maybeRevealExpansion();
+        document.getElementById("triadTitle").value = coreData.triadTitle || "";
+        document.getElementById("compiledBy").value = coreData.compiledBy || "";
+        updatePrestigeProgressBar();
+        window.coreData = coreData;
+        window.coreDataVersion++;
+      }
+
+      function redo() {
+        if (redoStack.length === 0) return;
+        undoStack.push(JSON.parse(JSON.stringify(coreData)));
+        coreData = redoStack.pop();
+        afterStateRestore();
+        checkPrestigeUnlockCondition();
+        maybeRevealExpansion();
+        document.getElementById("triadTitle").value = coreData.triadTitle || "";
+        document.getElementById("compiledBy").value = coreData.compiledBy || "";
+        updatePrestigeProgressBar();
+        window.coreData = coreData;
+        window.coreDataVersion++;
+      }
+
+      function afterStateRestore() {
+        reRenderAllUnitsAndEchoes();
+        populateEchoSelector();
+        maybeRevealExpansion();
+        document.getElementById("triadTitle").value = coreData.triadTitle || "";
+        document.getElementById("compiledBy").value = coreData.compiledBy || "";
+        // --- Key fix: force prestige detection to rerun the full unlock path
+        coreData.isPrestigeMode = false;
+        checkPrestigeUnlockCondition();
+        updatePrestigeProgressBar();
+        showFeedbackMessage("State restored (undo/redo).");
+        window.coreData = coreData;
+        window.coreDataVersion++;
+      }
+
+      function autosave() {
+        try {
+          localStorage.setItem('triadforge-autosave', JSON.stringify(coreData));
+        } catch (e) {
+          console.error('Autosave failed:', e);
+        }
+      }
+
+      function makeBlankCoreData() {
+        return {
+          identity: {},
+          vector: {},
+          thread: {},
+          expansion: {
+            identity: [],
+            vector: [],
+            thread: []
+          },
+          echoes: {
+            identity: {},
+            vector: {},
+            thread: {},
+            expansion: {
+              identity: {},
+              vector: {},
+              thread: {}
+            }
+          },
+          isPrestigeMode: false
+        };
+      }
+
+      function restoreAutosave() {
+        try {
+          const saved = localStorage.getItem('triadforge-autosave');
+          if (!saved) return false;
+
+          const loadedState = JSON.parse(saved);
+
+          if (!loadedState.identity || !loadedState.vector || !loadedState.thread || !loadedState.expansion || !loadedState.echoes) {
+            showFeedbackMessage("Invalid autosave structure. Could not restore.", 'error');
+            return false;
+          }
+
+          clearAllUI();
+          coreData = makeBlankCoreData();
+          Object.assign(coreData, loadedState);
+          console.log(coreData)
+
+          window.coreData = coreData;
+          window.coreDataVersion++;
+
+
+          try {
+            afterStateRestore();
+          } catch (err) {
+            console.error("Error in afterStateRestore:", err);
+            showFeedbackMessage('Error restoring autosave (see console for details).', 'error');
+            return false;
+          }
+          afterStateRestore();
+          showFeedbackMessage('Autosave restored!');
+          return true;
+        } catch (e) {
+          showFeedbackMessage('Failed to restore autosave.', 'error');
+          return false;
+        }
+      }
+
+
+
       // --- Save/Load/Eject All Functions ---
       function saveTriadState() {
         const triadTitle = document.getElementById("triadTitle").value.trim();
@@ -1334,6 +1473,7 @@
       }
 
       async function loadTriadState(file) {
+        saveStateForUndo();
         if (!file) {
           showFeedbackMessage("No file selected for loading.", 'error');
           return;
@@ -1384,16 +1524,14 @@
 
           populateEchoSelector();
           maybeRevealExpansion(); // Check if expansion panels should be visible
-          // ... same up to here ...
           document.getElementById("triadTitle").value = loadedState.triadTitle || "";
           document.getElementById("compiledBy").value = loadedState.compiledBy || "";
 
           // Force prestige detection to re-run the full unlock path
-          coreData.isPrestigeMode = false; // <-- reset before check!
+          coreData.isPrestigeMode = false; // <-- reset before check
           checkPrestigeUnlockCondition();
           showFeedbackMessage("Triad Forge state loaded successfully!");
           updatePrestigeProgressBar();
-
           window.coreData = coreData;
           window.coreDataVersion++;
 
@@ -1404,7 +1542,8 @@
       }
 
       function ejectAll() {
-        if (confirm("Are you sure you want to eject ALL loaded units and echoes? This cannot be undone.")) {
+        saveStateForUndo();
+        if (confirm("Are you sure you want to eject ALL loaded units and echoes?")) {
           coreData = {
             identity: {},
             vector: {},
@@ -1429,6 +1568,7 @@
           clearAllUI();
           populateEchoSelector();
           showFeedbackMessage("All units and echoes ejected!");
+          checkPrestigeUnlockCondition();
           updatePrestigeProgressBar();
           window.coreData = coreData;
           window.coreDataVersion++;
@@ -1454,6 +1594,15 @@
       document.getElementById("loadStateBtn").addEventListener("click", () => loadInput.click());
       document.getElementById("ejectAllBtn").addEventListener("click", ejectAll);
       document.getElementById("exportTriadBtn").addEventListener("click", exportTriadForgeState); // New export button listener
+      if (localStorage.getItem('triadforge-autosave')) {
+        if (confirm('Restore previous autosave?')) {
+          restoreAutosave();
+        }
+      }
+
+
+      document.getElementById("undoBtn").addEventListener("click", undo);
+      document.getElementById("redoBtn").addEventListener("click", redo);
 
 
 
@@ -1532,6 +1681,10 @@
         }
       }
 
+
+
+
+
     });
   </script>
 
@@ -1540,15 +1693,19 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 </head>
 
+
+
+
+
 <body class="bg-gray-950 text-white min-h-screen p-6">
   <div class="max-w-5xl mx-auto">
     <h1 class="text-4xl font-bold mb-6 text-center text-gray-800">⚙️ The Triad Forge</h1>
 
     <div class="bg-gray-900 rounded-xl p-4 mb-6">
       <label class="block mb-2">Triad Title (optional)</label>
-      <input id="triadTitle" type="text" placeholder="ΞDYNAMO TRIAD" class="w-full bg-gray-800 text-white p-2 rounded mb-4" />
+      <input id="triadTitle" type="text" placeholder="(THE AI's NAME)" class="w-full bg-gray-800 text-white p-2 rounded mb-4" />
       <label class="block mb-2">Compiled by (optional)</label>
-      <input id="compiledBy" type="text" placeholder="Riley" class="w-full bg-gray-800 text-white p-2 rounded" />
+      <input id="compiledBy" type="text" placeholder="(YOUR NAME)" class="w-full bg-gray-800 text-white p-2 rounded" />
     </div>
 
     <div class="w-full bg-gray-300 rounded h-6 my-4">
@@ -1629,6 +1786,9 @@
         </div>
       </div>
     </div>
+
+    <button id="undoBtn">Undo</button>
+    <button id="redoBtn">Redo</button>
 
     <div class="mt-10">
       <h2 class="text-xl font-semibold mb-2 text-gray-800">📥 Dreamstate Echo Upload</h2>
@@ -2556,6 +2716,8 @@ const handleSlotToTriadForge = () => {
     window.coreDataVersion++;
     alert(`Slotted as Echo to TriadForge: ${core} ${glyph}${isExpansion ? " (Expansion)" : ""}`);
 updatePrestigeProgressBar();
+autosave(); 
+
   }
   // Optionally, refresh options
   setSlotTarget("");
