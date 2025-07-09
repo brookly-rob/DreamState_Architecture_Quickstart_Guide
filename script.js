@@ -1,3 +1,14 @@
+// These functions MUST be global for inline onclick to work!
+function closeEmbeddedApp() {
+    document.getElementById('embeddedAppContainer').classList.add('hidden');
+    document.getElementById('embeddedAppFrame').src = '';
+}
+
+function closeCoreOverview() {
+    document.getElementById('coreOverviewContainer').classList.add('hidden');
+    document.getElementById('coreOverviewFrame').src = '';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Get references to existing elements
     const downloadFileBtn = document.getElementById('downloadFileBtn');
@@ -18,6 +29,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadCoreComponentBtn = document.getElementById('downloadCoreComponentBtn');
     const setupNewFolderBtn = document.getElementById('setupNewFolderBtn');
     const downloadAllToolsBtn = document.getElementById('downloadAllToolsBtn');
+
+    // Onboarding Modal
+    if (!localStorage.getItem('dreamstate_onboarding_shown')) {
+        document.getElementById('onboardingModal').style.display = 'flex';
+    }
+    document.getElementById('onboardingCloseBtn').onclick = function () {
+        document.getElementById('onboardingModal').style.display = 'none';
+        localStorage.setItem('dreamstate_onboarding_shown', 'yes');
+    };
 
     // --- Helper function for downloading files ---
     function downloadFile(filePath, fileName) {
@@ -411,7 +431,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- New Feature: Download "TriadCoreBuildingTools.zip" ---
     downloadCoreComponentBtn.addEventListener('click', () => {
-        downloadFile('assets/TriadCoreBuildingTools.zip', 'TriadCoreBuildingTools.zip'); 
+        downloadFile('assets/TriadCoreBuildingTools.zip', 'TriadCoreBuildingTools.zip');
     });
 
 
