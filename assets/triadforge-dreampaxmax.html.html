@@ -1648,6 +1648,48 @@
         }
       }
 
+      // Add this helper near loadTriadState()
+      async function loadTriadStateFromData(data) {
+        showLoading("Loading Triad State...");
+        saveStateForUndo();
+        try {
+          let loadedState;
+          if (typeof data === 'string') {
+            loadedState = JSON.parse(data);
+          } else {
+            loadedState = data;
+          }
+
+          if (!loadedState.identity || !loadedState.vector || !loadedState.thread || !loadedState.expansion || !loadedState.echoes) {
+            showFeedbackMessage("Invalid save file structure. Please select a valid Triad Forge state file.", 'error');
+            return;
+          }
+
+          clearAllUI();
+          coreData = makeBlankCoreData();
+          Object.assign(coreData, loadedState);
+          coreData = sanitizeAllStrings(coreData);
+
+          reRenderAllUnitsAndEchoes();
+          populateEchoSelector();
+          maybeRevealExpansion();
+          document.getElementById("triadTitle").value = loadedState.triadTitle || "";
+          document.getElementById("compiledBy").value = loadedState.compiledBy || "";
+
+          coreData.isPrestigeMode = false;
+          checkPrestigeUnlockCondition();
+          showFeedbackMessage("Triad Forge state loaded successfully!");
+          updatePrestigeProgressBar();
+          window.coreData = coreData;
+          window.coreDataVersion++;
+        } catch (e) {
+          showFeedbackMessage("Failed to load state. Ensure the file is a valid Triad Forge JSON save.", 'error');
+          console.error("Load state error:", e);
+        }
+        hideLoading();
+        autosave();
+      }
+
 
       // --- Initial setup calls ---
       populateEchoSelector();
@@ -1766,6 +1808,16 @@
         // Most browsers ignore the custom message, but setting returnValue triggers the prompt
         e.returnValue = 'Are you sure? Unsaved changes will be lost.';
         return 'Are you sure? Unsaved changes will be lost.';
+      });
+
+      // Accept LOAD_SAVE messages from parent window
+      window.addEventListener('message', (event) => {
+        // Optionally: check event.origin here for security!
+        const msg = event.data;
+        if (msg && msg.type === 'LOAD_SAVE' && msg.data) {
+          loadTriadStateFromData(msg.data);
+          showFeedbackMessage('Loaded save from external source!', 'success');
+        }
       });
 
     });
