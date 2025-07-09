@@ -1650,7 +1650,6 @@
 
       // Add this helper near loadTriadState()
       async function loadTriadStateFromData(data) {
-console.log('[TriadForge] loadTriadStateFromData called with:', data);
         showLoading("Loading Triad State...");
         saveStateForUndo();
         try {
@@ -1719,6 +1718,22 @@ console.log('[TriadForge] loadTriadStateFromData called with:', data);
         if (confirm('Restore previous autosave?')) {
           restoreAutosave();
         }
+      } else {
+        // Try to fetch and load default starter framework
+        fetch('triad_starterframework.json')
+          .then(resp => {
+            if (!resp.ok) throw new Error('not found');
+            return resp.text();
+          })
+          .then(text => {
+            let json = JSON.parse(text);
+            loadTriadStateFromData(json);
+            showFeedbackMessage('Loaded starter framework!', 'success');
+          })
+          .catch(() => {
+            // If file not found or error, just stay blank (current behavior)
+            console.log('No starter framework found; starting with blank state.');
+          });
       }
 
 
@@ -1815,9 +1830,9 @@ console.log('[TriadForge] loadTriadStateFromData called with:', data);
       window.addEventListener('message', (event) => {
         // Optionally: check event.origin here for security!
         const msg = event.data;
- console.log('[TriadForge] Received postMessage:', msg);
+        console.log('[TriadForge] Received postMessage:', msg);
         if (msg && msg.type === 'LOAD_SAVE' && msg.data) {
-console.log('[TriadForge] Data to load:', msg.data);
+          console.log('[TriadForge] Data to load:', msg.data);
           loadTriadStateFromData(msg.data);
           showFeedbackMessage('Loaded save from external source!', 'success');
         }
@@ -2886,7 +2901,28 @@ autosave();
 };
 
 
+const handleGlyphInputDrop = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+    const file = e.dataTransfer.files[0];
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      setGlyphInput(evt.target.result || "");
+    };
+    reader.readAsText(file);
+  }
+};
 
+const handleGlyphInputDragOver = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
+
+const handleGlyphInputDragLeave = (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+};
 
 
         return (
@@ -2908,7 +2944,7 @@ autosave();
 <p>
 	(Blank core units: use ☲ “Spark” as default until assigned otherwise)
         </p>
-				</label>
+				</label> 
 
                 <textarea
                   id="glyphInput"
@@ -2925,9 +2961,11 @@ autosave();
 								"
 
 
-
-
                   style={{ width: "100%", height: "250px" }}
+
+  onDrop={handleGlyphInputDrop}
+  onDragOver={handleGlyphInputDragOver}
+  onDragLeave={handleGlyphInputDragLeave}
                 />
                 <button onClick={handleParseGlyphstream}>Parse to JSON</button>
 
