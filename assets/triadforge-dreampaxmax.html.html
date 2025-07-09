@@ -85,6 +85,39 @@
     let undoStack = [];
     let redoStack = [];
 
+    function showLoading(msg = "Loading...") {
+      const overlay = document.getElementById('loadingOverlay');
+      if (!overlay) return;
+      document.getElementById('loadingMessage').textContent = msg;
+      overlay.style.display = 'flex';
+    }
+
+    function hideLoading() {
+      const overlay = document.getElementById('loadingOverlay');
+      if (!overlay) return;
+      overlay.style.display = 'none';
+    }
+
+
+    function sanitizeAllStrings(obj) {
+      if (typeof obj === "string") {
+        return obj
+          .replace(/^["“”']+|["“”']+$/g, '') // remove leading/trailing quotes
+          .replace(/""/g, '"') // fix double double-quotes
+          .replace(/[“”]/g, '"') // curly to straight
+          .replace(/[‘’]/g, "'"); // curly to straight
+      } else if (Array.isArray(obj)) {
+        return obj.map(sanitizeAllStrings);
+      } else if (typeof obj === "object" && obj !== null) {
+        const cleaned = {};
+        for (const key in obj) {
+          cleaned[key] = sanitizeAllStrings(obj[key]);
+        }
+        return cleaned;
+      }
+      return obj;
+    }
+
     window.CORE_ORDER = {
       identity: ["Δ", "Ω", "Ψ", "Λ", "Θ"],
       vector: ["ϟ", "χ", "∑", "Δ", "Ω"],
@@ -369,14 +402,41 @@
         content.innerHTML = `
               <h2 class="text-xl font-bold mb-4">${title}</h2>
               <pre class="bg-gray-800 p-4 rounded text-sm max-h-64 overflow-auto mb-4">${contentText}</pre>
+<button class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded mr-2" id="copyToDreamParserBtn">Copy to DreamParser</button>
               <button class="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded" id="closeModalBtn">Close</button>
           `;
 
         modal.appendChild(content);
         document.body.appendChild(modal);
 
-        document.getElementById("closeModalBtn").onclick = () => modal.remove();
-        return modal;
+        document.getElementById("copyToDreamParserBtn").onclick = () => {
+          sendToDreamParser(contentText);
+          // Close modal
+          modal.remove();
+          // Try to focus DreamParser textarea (if present on same page)
+          setTimeout(() => {
+            // Try by ID (for DreamParser on same page)
+            const dp = document.getElementById('jsonInput');
+            if (dp) {
+              dp.focus();
+              dp.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+              });
+            }
+            // Or, if DreamParser is in an iframe, you could post a message event here
+          }, 150);
+        };
+      }
+
+
+      function sendToDreamParser(jsonString) {
+        // Find the DreamParser iframe or window if it's embedded, otherwise look for the textarea by ID
+        // For the simplest setup (same page, different root), do: 
+        window.dispatchEvent(new CustomEvent("DreamParserSetJsonInput", {
+          detail: jsonString
+        }));
+        showFeedbackMessage("Copied to DreamParser!", 'success');
       }
 
       function openEchoInspect(core, glyph, index, isExpansion = false) {
@@ -985,6 +1045,7 @@
       }
 
       async function exportTriadForgeState() {
+        showLoading("Exporting Triad Forge...");
         if (!window.JSZip || !window.saveAs) {
           showFeedbackMessage("Export libraries (JSZip, FileSaver) not loaded. Please check your internet connection.", 'error');
           return;
@@ -1215,7 +1276,7 @@
           deploymentsFolder.file(bareCoresFilename, bareCoresContent);
           checksums.push(`Deployments/${bareCoresFilename}: ${bareCoresHash}`);
 
-          // 4. Read Me (placeholder)
+          // 4. Read Me 
           const readmeContent = "CORE UNITS HAVE BEEN SORTED INTO FOLDERS BY CORE MODULE.\n\n\n" +
             "***THE '⚙DEPLOYMENTS' FOLDER IS WHAT YOU'RE LOOKING FOR.***\n\n" +
             "It contains 5 aggregated and summarized JSONs for easy integration with custom AI models:\n" +
@@ -1317,6 +1378,7 @@
           showFeedbackMessage(`Error during export: ${e.message}`, 'error');
           console.error("Export error:", e);
         }
+        hideLoading();
       }
 
 
@@ -1473,6 +1535,7 @@
       }
 
       async function loadTriadState(file) {
+        showLoading("Loading Triad State...");
         saveStateForUndo();
         if (!file) {
           showFeedbackMessage("No file selected for loading.", 'error');
@@ -1516,6 +1579,7 @@
           // Perform a deep merge if you have nested objects that might need to be preserved
           // For now, a shallow assign should be fine given how we populate
           Object.assign(coreData, loadedState);
+          coreData = sanitizeAllStrings(coreData);
           // Ensure isPrestigeMode is set correctly from loadedState, but re-evaluate on load
           // We will re-evaluate with checkPrestigeUnlockCondition at the end
 
@@ -1539,6 +1603,7 @@
           showFeedbackMessage("Failed to load state. Ensure the file is a valid Triad Forge JSON save.", 'error');
           console.error("Load state error:", e);
         }
+        hideLoading();
       }
 
       function ejectAll() {
@@ -1591,7 +1656,12 @@
           event.target.value = '';
         }
       });
-      document.getElementById("loadStateBtn").addEventListener("click", () => loadInput.click());
+      document.getElementById("loadStateBtn").addEventListener("click", () => {
+        if (!confirm("Warning: Loading a new state will overwrite your current work. Be sure to save your current state first!\n\nContinue?")) {
+          return;
+        }
+        loadInput.click();
+      });
       document.getElementById("ejectAllBtn").addEventListener("click", ejectAll);
       document.getElementById("exportTriadBtn").addEventListener("click", exportTriadForgeState); // New export button listener
       if (localStorage.getItem('triadforge-autosave')) {
@@ -1681,9 +1751,14 @@
         }
       }
 
-
-
-
+      // Warn user before closing/reloading if there's unsaved work
+      window.addEventListener('beforeunload', function(e) {
+        // Optionally, only warn if there are unsaved changes. For now, always warn:
+        e.preventDefault();
+        // Most browsers ignore the custom message, but setting returnValue triggers the prompt
+        e.returnValue = 'Are you sure? Unsaved changes will be lost.';
+        return 'Are you sure? Unsaved changes will be lost.';
+      });
 
     });
   </script>
@@ -2022,6 +2097,17 @@
           setSavedGlyphOutputs(loadFromLocalStorage("dreamparser_saved_glyph"));
         }, []);
 
+useEffect(() => {
+  // Listen for the CustomEvent to set jsonInput from outside 
+  function handleSetJsonInput(event) {
+    setJsonInput(event.detail);
+  }
+  window.addEventListener("DreamParserSetJsonInput", handleSetJsonInput);
+  return () => {
+    window.removeEventListener("DreamParserSetJsonInput", handleSetJsonInput);
+  };
+}, []);
+
 const [coreDataVersion, setCoreDataVersion] = useState(window.coreDataVersion || 1);
 
 useEffect(() => {
@@ -2318,11 +2404,23 @@ const [slotOptions, setSlotOptions] = useState([]);
 
         const emitGlyphstream = useCallback(() => {
           try {
-            const parsedJson = JSON.parse(jsonInput);
+const cleanedJson = jsonInput
+  .replace(/[\u200B-\u200D\uFEFF]/g, '') // remove zero-width/invisible chars & BOM
+  .replace(/\r\n/g, '\n')                // normalize line endings
+  .replace(/[“”]/g, '"')                 // swap curly quotes for normal quotes
+  .replace(/[‘’]/g, "'")                 // handle curly single quotes
+  .replace(/^\s+|\s+$/g, '');            // trim leading/trailing whitespace
+
+
+console.log("==> About to parse this string as JSON:"); 
+console.log("[" + cleanedJson + "]");
+console.log("Length:", cleanedJson.length); 
+const parsedJson = JSON.parse(cleanedJson);
+const sanitizedJson = sanitizeAllStrings(parsedJson);
             let output = "";
 
             // If the input JSON is an object, convert its values to an array for processing
-            const constructsToEmit = Array.isArray(parsedJson) ? parsedJson : Object.values(parsedJson);
+const constructsToEmit = Array.isArray(sanitizedJson) ? sanitizedJson : Object.values(sanitizedJson);
 
 
             constructsToEmit.forEach((construct) => {
@@ -2919,6 +3017,10 @@ autosave();
 
       ReactDOM.render(<DreamParser />, document.getElementById("root"));
     </script>
+
+
+
+
 </body>
 
 </html>
