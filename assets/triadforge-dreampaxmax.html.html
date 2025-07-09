@@ -409,6 +409,10 @@
         modal.appendChild(content);
         document.body.appendChild(modal);
 
+        document.getElementById("closeModalBtn").onclick = () => modal.remove();
+
+
+
         document.getElementById("copyToDreamParserBtn").onclick = () => {
           sendToDreamParser(contentText);
           // Close modal
@@ -427,6 +431,8 @@
             // Or, if DreamParser is in an iframe, you could post a message event here
           }, 150);
         };
+
+        return modal;
       }
 
 
@@ -1465,6 +1471,7 @@
       }
 
       function restoreAutosave() {
+        saveStateForUndo();
         try {
           const saved = localStorage.getItem('triadforge-autosave');
           if (!saved) return false;
@@ -1604,6 +1611,7 @@
           console.error("Load state error:", e);
         }
         hideLoading();
+        autosave();
       }
 
       function ejectAll() {
