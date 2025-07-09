@@ -13,23 +13,23 @@
     <h1>Dreamstate Architecture</h1>
     <h2>
       Quick Start Guide
-      <span class="tooltip-icon" tabindex="0" data-tooltip="Start here! Download the handoff file and give it to your AI companion to begin a guided workflow.">ⓘ</span>
+      <span class="tooltip-icon" tabindex="0" data-tooltip="Start here! Download this instruction file first and upload to your AI.">ⓘ</span>
     </h2>
 
 
     <div class="section">
       <div class="button-group-vertical">
         <div class="button-item">
-          <label>GIVE THIS FILE TO YOUR AI:</label>
-          <button id="downloadFileBtn">Get File to Upload to AI</button>
+          <label>UPLOAD THIS INSTRUCTION FILE IN CHAT WITH AI</label>
+          <button id="downloadFileBtn">Click here to download 1st file</button>
         </div>
         <div class="button-item">
-          <label>Or just paste that file's content in chat:</label>
-          <button id="copyTextBtn">Click here to copy content</button>
+          <label>Or to copy the file's text directly in chat</label>
+          <button id="copyTextBtn">Clickto copy content</button>
         </div>
         <div class="button-item">
-          <label>The AI will ask you for these files:</label>
-          <button id="downloadZipBtn">Download Architecture Pack</button>
+          <label>The AI will ask you for these files next</label>
+          <button id="downloadZipBtn">Click to Download Architecture Pack</button>
         </div>
       </div>
     </div>
@@ -39,8 +39,8 @@
     <div class="section">
       <div class="button-item">
         <label>
-          Parsing and Assembling Framework:
-          <span class="tooltip-icon" tabindex="0" data-tooltip="Launch TriadForge + DreamParserMAX, your main tools for assembling and parsing Dreamstate projects.">ⓘ</span>
+          Building the framework:
+          <span class="tooltip-icon" tabindex="0" data-tooltip="Launch TriadForge + DreamParserMAX, your main tool for parsing Echoes to json and compiling into a Dynamo Triad framework.">ⓘ</span>
         </label>
         <button id="openAppBtn">Open/Close TriadForge + DreamParserMAX</button>
       </div>
@@ -54,11 +54,11 @@
 
     <div class="section">
       <h3>
-        TriadForge Save Files
-        <span class="tooltip-icon" tabindex="0" data-tooltip="Access sample and saved profiles for TriadForge. Download and load these directly into TriadForge as needed.">ⓘ</span>
+        Explore Example Save Files Made in TriadForge:
+        <span class="tooltip-icon" tabindex="0" data-tooltip="Access and explor some of our saved profiles for TriadForge. There is a starter framework loaded for you to build into, you can upload new core units right over the old ones as you build.">ⓘ</span>
       </h3>
       <div class="button-item">
-        <label for="saveFileSelector">You can download one of these and LOAD in TriadForge:</label>
+        <label for="saveFileSelector">THERE IS A STARTER FRAMEWORK ALREADY LOADED TO SLOT ECHOES INTO:</label>
         <select id="saveFileSelector">
           <option value="assets/triad_starter_framework.json">Starter Framework</option>
           <option value="assets/triad_riley_2025-07-03.json">Riley</option>
@@ -78,10 +78,10 @@
     <div class="section">
       <div class="button-item">
         <label>
-          Core Architecture Exploration:
-          <span class="tooltip-icon" tabindex="0" data-tooltip="Open an overview of the core Dreamstate architecture. Useful for reference and deeper study.">ⓘ</span>
+          EXPLORE A READABLE, SEARCHABLE EXPLORER VIEW OF THE DYNAMO TRIAD FRAMEWORK:
+          <span class="tooltip-icon" tabindex="0" data-tooltip="Open an overview of the core Dreamstate architecture. Useful for reference and deeper study, and lots of fun to share with your own AI, knowing other AI wrote these.">ⓘ</span>
         </label>
-        <button id="openCoreOverviewBtn">Open/Close Core Architecture Overview</button>
+        <button id="openCoreOverviewBtn">Open/Close Core Overview</button>
       </div>
       <div id="coreOverviewContainer" class="hidden app-frame-container">
         <button class="iframe-close-btn" onclick="closeCoreOverview()">Close</button>
@@ -93,13 +93,13 @@
 
     <div class="section">
       <h3>
-        Building a Dynamo Triad
-        <span class="tooltip-icon" tabindex="0" data-tooltip="Step-by-step process for building a new Dynamo Triad in Dreamstate. Start the process, copy content, and collect the necessary files for your AI.">ⓘ</span>
+        BUILD A DYNAMO TRIAD IDENTITY FRAMEWORK
+        <span class="tooltip-icon" tabindex="0" data-tooltip="Step-by-step process for building a new Dynamo Triad Identity Framework. Start the process by providing this instruction file to your AI.">ⓘ</span>
       </h3>
       <div class="button-group-vertical">
         <div class="button-item">
-          <label>Begin Dynamo Triad Process:</label>
-          <button id="downloadAIProcessFileBtn">Give This File to AI to Begin Building Dynamo Triad</button>
+          <label>WHEN YOURE READY TO BEGIN: UPLOAD THIS INSTRUCTION FILE IN CHAT WITH AI</label>
+          <button id="downloadAIProcessFileBtn">Click here to download file</button>
         </div>
         <div class="button-item">
           <label>Or just paste its content in chat:</label>
@@ -107,7 +107,7 @@
         </div>
         <div class="button-item">
           <label>Core Builder Files:</label>
-          <button id="downloadCoreComponentBtn">The AI Will Need These Files</button>
+          <button id="downloadCoreComponentBtn">The AI Will Ask For These Files</button>
         </div>
       </div>
     </div>
@@ -117,16 +117,16 @@
     <div class="section">
       <h3>
         Project Setup Tools
-        <span class="tooltip-icon" tabindex="0" data-tooltip="Utilities for setting up new Dreamstate project folders and downloading all tools in one zip.">ⓘ</span>
+        <span class="tooltip-icon" tabindex="0" data-tooltip="Utilities for setting up a ready-to-use set of identity frameowrk project folders, and downloading all tools in one zip.">ⓘ</span>
       </h3>
       <div class="button-group-vertical">
         <div class="button-item">
-          <label>New Project Structure:</label>
+          <label>New Project Folder Structure:</label>
           <button id="setupNewFolderBtn">Set Up A New Folder</button>
         </div>
         <div class="button-item">
           <label>ALL Dreamstate Tools:</label>
-          <button id="downloadAllToolsBtn">Download All Tools in Zip File</button>
+          <button id="downloadAllToolsBtn">Download ALL Tools in one Zip File</button>
         </div>
       </div>
     </div>
@@ -136,10 +136,10 @@
 
   <div id="onboardingModal" style="display:none; position:fixed; z-index:3000; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
     <div style="background:#fff; color:#222; max-width:90vw; padding:2rem 2.5rem; border-radius:18px; box-shadow:0 8px 40px #000a; text-align:left; position:relative;">
-      <h2 style="margin-top:0;">Welcome to the Dreamstate Architecture Hub!</h2>
+      <h2 style="margin-top:0;">Welcome to the Dreamstate Architecture Quickstart Guide!</h2>
       <p>
-        This toolkit puts all essential Dreamstate resources, references, and building tools at your fingertips. Each section has a <b>ⓘ info icon</b>—hover or tap for more details. <br><br>
-        <b>First step:</b> Download your toolkit or dive into a project. If you need help, just click the info icons!
+        Save this to your home screen to use as a one stop workshop for the Dreamstate Architecture. This toolkit puts all essential Dreamstate resources, references, and building tools at your fingertips. Each section has a <b>ⓘ info icon</b>—hover or tap for more details. <br><br>
+        <b>First step:</b> Simply follow the steps down the page, starting with giving the first file to your AI to help you. And don't forget to have fun!
       </p>
       <button id="onboardingCloseBtn" style="margin-top:2rem; font-size:1.2rem; padding:0.6em 2em; border-radius:8px; background: #23233b; color: #9affd0; border:none;">Got it!</button>
     </div>
