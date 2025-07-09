@@ -226,3 +226,79 @@ h3 {
         gap: 15px; /* Slightly less gap between buttons */
     }
 }
+
+
+
+.tooltip-icon {
+  cursor: pointer;
+  color: #9affd0;
+  margin-left: 8px;
+  font-size: 1.08em;
+  vertical-align: middle;
+  position: relative;
+  outline: none;
+}
+.tooltip-icon:hover::after,
+.tooltip-icon:focus::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 120%;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 200px;
+  max-width: 280px;
+  background: #23233b;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 8px;
+  white-space: normal;
+  font-size: 1em;
+  box-shadow: 0 4px 16px #0006;
+  z-index: 1000;
+}
+@media (max-width: 700px) {
+  .tooltip-icon:hover::after,
+  .tooltip-icon:focus::after {
+    left: 0;
+    top: 120%;
+    transform: none;
+    min-width: 160px;
+    max-width: 90vw;
+    margin-top: 6px;
+  }
+}
+
+@media (max-width: 700px) {
+  .app-frame-container {
+    position: fixed !important;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 5000;
+    background: #181824;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+  }
+  .app-frame-container iframe {
+    flex: 1 1 auto;
+    width: 100vw !important;
+    height: calc(100vh - 56px) !important; /* leaves space for close btn */
+    border: none;
+    background: #fff;
+  }
+  .iframe-close-btn {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background: #23233b;
+    color: #9affd0;
+    font-size: 1.3em;
+    padding: 14px 0;
+    border: none;
+    z-index: 5100;
+    text-align: center;
+  }
+}
