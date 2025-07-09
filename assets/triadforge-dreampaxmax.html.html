@@ -1650,6 +1650,7 @@
 
       // Add this helper near loadTriadState()
       async function loadTriadStateFromData(data) {
+console.log('[TriadForge] loadTriadStateFromData called with:', data);
         showLoading("Loading Triad State...");
         saveStateForUndo();
         try {
@@ -1814,7 +1815,9 @@
       window.addEventListener('message', (event) => {
         // Optionally: check event.origin here for security!
         const msg = event.data;
+ console.log('[TriadForge] Received postMessage:', msg);
         if (msg && msg.type === 'LOAD_SAVE' && msg.data) {
+console.log('[TriadForge] Data to load:', msg.data);
           loadTriadStateFromData(msg.data);
           showFeedbackMessage('Loaded save from external source!', 'success');
         }
