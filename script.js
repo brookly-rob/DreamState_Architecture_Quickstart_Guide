@@ -30,6 +30,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const setupNewFolderBtn = document.getElementById('setupNewFolderBtn');
     const downloadAllToolsBtn = document.getElementById('downloadAllToolsBtn');
 
+const loadSaveFileBtn = document.getElementById('loadSaveFileBtn');
+
+loadSaveFileBtn.addEventListener('click', async () => {
+    const selectedFilePath = saveFileSelector.value;
+    if (!selectedFilePath) {
+        alert('Please select a save file to load into TriadForge.');
+        return;
+    }
+    try {
+        // Fetch the file from assets (relative path)
+        const response = await fetch(selectedFilePath);
+        if (!response.ok) throw new Error('File fetch failed');
+        const fileData = await response.text();
+        // Try to parse as JSON
+        let jsonData;
+        try {
+            jsonData = JSON.parse(fileData);
+        } catch (e) {
+            alert('Selected file is not valid JSON.');
+            return;
+        }
+        // Send the data to TriadForge’s iframe using postMessage
+        const triadForgeFrame = document.getElementById('embeddedAppFrame');
+        if (!triadForgeFrame || !triadForgeFrame.contentWindow) {
+            alert('TriadForge app is not available.');
+            return;
+        }
+        triadForgeFrame.contentWindow.postMessage(
+            {
+                type: 'LOAD_SAVE',
+                data: jsonData
+            },
+            '*' // You can restrict this to the iframe’s origin when you know it for better security
+        );
+        alert('Save file sent to TriadForge!');
+    } catch (err) {
+        alert('Failed to load save file: ' + err.message);
+    }
+});
+
     // Onboarding Modal
     if (!localStorage.getItem('dreamstate_onboarding_shown')) {
         document.getElementById('onboardingModal').style.display = 'flex';
