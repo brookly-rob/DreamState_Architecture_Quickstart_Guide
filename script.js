@@ -487,4 +487,19 @@ loadSaveFileBtn.addEventListener('click', async () => {
     downloadAllToolsBtn.addEventListener('click', () => {
         downloadFile('assets/DSA_Full_Toolsets.zip', 'DSA_Full_Toolsets.zip');
     });
+
+document.querySelectorAll('.tooltip-icon').forEach(el => {
+      el.addEventListener('mouseenter', function() {
+        const rect = el.getBoundingClientRect();
+        if (rect.right + 300 > window.innerWidth) {
+          el.classList.add('tooltip-left');
+        } else {
+          el.classList.remove('tooltip-left');
+        }
+      });
+      el.addEventListener('mouseleave', function() {
+        el.classList.remove('tooltip-left');
+      });
+    });
+
 });
