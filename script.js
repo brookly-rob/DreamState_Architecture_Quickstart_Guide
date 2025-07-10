@@ -488,18 +488,24 @@ loadSaveFileBtn.addEventListener('click', async () => {
         downloadFile('assets/DSA_Full_Toolsets.zip', 'DSA_Full_Toolsets.zip');
     });
 
-document.querySelectorAll('.tooltip-icon').forEach(el => {
-      el.addEventListener('mouseenter', function() {
-        const rect = el.getBoundingClientRect();
-        if (rect.right + 300 > window.innerWidth) {
-          el.classList.add('tooltip-left');
-        } else {
-          el.classList.remove('tooltip-left');
-        }
-      });
-      el.addEventListener('mouseleave', function() {
-        el.classList.remove('tooltip-left');
-      });
-    });
+
+// This will close any open tooltip when you tap outside a .tooltip-icon
+document.addEventListener('touchstart', function(event) {
+  const open = document.querySelector('.tooltip-icon:focus');
+  if (open && !open.contains(event.target)) {
+    open.blur();
+  }
+});
+
+['mousedown', 'touchstart'].forEach(evt =>
+  document.addEventListener(evt, function(event) {
+    const open = document.querySelector('.tooltip-icon:focus');
+    if (open && !open.contains(event.target)) {
+      open.blur();
+    }
+  })
+);
+
+
 
 });
