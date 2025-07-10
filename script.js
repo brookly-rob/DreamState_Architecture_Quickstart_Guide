@@ -480,7 +480,7 @@ loadSaveFileBtn.addEventListener('click', async () => {
         downloadFile('assets/Folder_Setup_Template.zip', 'Folder_Setup_Template.zip');
         // You would need to create this 'Folder_Setup_Template.zip' file manually
         // with the specified folder structure and pre-written text files.
-        alert('You will need to open the "Folder_Setup_Template.zip" file in your downloads. That will set up your new folder structure. MOBILE USERS: You may need to use the search bar to find this in your device's files');
+        alert('Find the "Folder_Setup_Template.zip" file in your downlaods and open it to set up your new folder structure.');
     });
 
     // --- New Feature: Download all tools (DSA_Full_Toolsets.zip) ---
