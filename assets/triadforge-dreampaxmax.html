@@ -1589,6 +1589,21 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         showFeedbackMessage("Triad Forge state saved!");
+// Send state to parent for CoreOverview handoff
+if (window.parent && window.parent !== window) {
+  // Prompt user
+  const wantsCoreView = window.confirm('Would you like to view in Core Overview?');
+  window.parent.postMessage(
+    {
+      type: 'TRIADFORGE_SAVED',
+      data: stateToSave,
+      wantsCoreView: wantsCoreView,
+      filename: filename
+    },
+    '*'
+  );
+}
+
       }
 
       async function loadTriadState(file) {
@@ -2672,7 +2687,7 @@ const constructsToEmit = Array.isArray(sanitizedJson) ? sanitizedJson : Object.v
             // Attempt to set filename from the first construct's titleCore if it exists
             if (parsed.length > 0 && parsed[0].titleCore) {
               // Define allowed symbols for filename (same as object keys for consistency)
-              const allowedSymbolsForFilename = "ΔΩΨΛΘ✵ϟχ∑✦⊗✺∂⊕φ∞☷⚶ΞΣ∅⛩✶🫧🌍🜈-"; // Removed 'Ξ' as it's not typically in filename but can be in titleCore
+              const allowedSymbolsForFilename = "ΔΩΨΛΘ✵ϟχ∑✦⊗✺∂⊕φ∞☷⚶ΞΣ∅⛩✶🫧🌍🜈☲-"; // Removed 'Ξ' as it's not typically in filename but can be in titleCore
               const cleanedTitle = parsed[0].titleCore.replace(new RegExp(`[^a-zA-Z0-9_\\s${allowedSymbolsForFilename}]`, 'g'), '') // Allow symbols, alphanumeric, underscore, and space
                                             .replace(/[\s_-]+/g, '_') // Replace spaces/multiple underscores/hyphens with single underscore
                                             .replace(/^-+|-+$/g, '') // Remove leading/trailing hyphens (if any from previous replace)
@@ -2707,7 +2722,7 @@ const constructsToEmit = Array.isArray(sanitizedJson) ? sanitizedJson : Object.v
                 }
 
                 if (firstTitleCore) {
-                    const allowedSymbolsForFilename = "ΔΩΨΛΘ✵ϟχ∑✦⊗✺∂⊕φ∞☷⚶Σ-⚶∅⛩✶🫧🌍🜈"; // Ensure consistency
+                    const allowedSymbolsForFilename = "ΔΩΨΛΘ✵ϟχ∑✦⊗✺∂⊕φ∞☷⚶Σ-⚶∅⛩✶🫧🌍🜈☲"; // Ensure consistency
                     const cleanedTitle = firstTitleCore.replace(new RegExp(`[^a-zA-Z0-9_\\s${allowedSymbolsForFilename}]`, 'g'), '')
                                             .replace(/[\s_-]+/g, '_')
                                             .replace(/^-+|-+$/g, '')
@@ -2936,7 +2951,8 @@ const handleSlotToTriadForge = () => {
     currentEchoes.push(parsedJson);
     if (window.updateMemoryTracker) window.updateMemoryTracker(core, glyph, isExpansion);
     window.coreDataVersion++;
-    alert(`Slotted as Echo to TriadForge: ${core} ${glyph}${isExpansion ? " (Expansion)" : ""}`);
+    alert(`Slotted as Echo to TriadForge: ${core} ${glyph}${isExpansion ? " (Expansion)" : ""}`); 
+setupExpansionUploader(core, inputElement, selectElement);setupExpansionUploader(core, inputElement, selectElement);
 updatePrestigeProgressBar();
 autosave(); 
 
@@ -2988,7 +3004,7 @@ const handleGlyphInputDrop = (e) => {
                 <label htmlFor="glyphInput">
                   Paste Dreamstate Echoes, Narrative Lattices, or Core Units here:                
 <p>
-	Classify and Annotate Core Units as needed: Δ Ω Ψ Λ Θ ✵ ϟ χ ∑ ✦ ⊗ ✺ ∂ ⊕ φ ∞ ☷ ⚶ ∅ ⛩ ✶ 🫧 🌍 🜈 ℳ Ξ → ↳
+	Classify and Annotate Core Units as needed: ☲ Δ Ω Ψ Λ Θ ✵ ϟ χ ∑ ✦ ⊗ ✺ ∂ ⊕ φ ∞ ☷ ⚶ ∅ ⛩ ✶ 🫧 🌍 🜈 ℳ Ξ → ↳
        </p>
 <p>
 	(Blank core units: use ☲ “Spark” as default until assigned otherwise)
