@@ -431,13 +431,13 @@
       padding: 0.7em 1.1em;
       position: absolute;
       z-index: 100;
-      Left: 10%;
-      top: 100%;
+      left: 130%;
+      top: 50%;
       transform: translateY(-50%);
       opacity: 0;
       font-size: .7em;
-      min-width: 180px;
-      max-width: 180px;
+      min-width: 320px;
+      max-width: 320px;
       box-shadow: 0 4px 16px #fff5;
       border: 1px solid #dde2ff66;
       transition: opacity 0.25s;
@@ -451,6 +451,12 @@
       opacity: 1;
       pointer-events: auto;
     }
+
+.help-tooltip > span {
+  color: #ff4fcf !important; /* vibrant pink/purple for question mark */
+  background: transparent !important;
+}
+
     
     /* Keyframes stay the same as your original for glow/animation */
     
@@ -564,8 +570,8 @@
       wrapper.style.verticalAlign = 'middle';
 
       const icon = document.createElement('span');
-      icon.textContent = '❔';
-      icon.style.cssText = 'cursor:pointer;font-size:1.1em;color:#4b6cb7;';
+      icon.textContent = '?';
+icon.style.cssText = 'cursor:pointer;font-size:1.1em;color:#ff4fcf;';
       icon.tabIndex = 0; // Make focusable for accessibility
 
       const tooltip = document.createElement('span');
@@ -1924,6 +1930,39 @@ Enjoy exploring your exported Dreamstate!`);
         document.body.removeChild(a);
         URL.revokeObjectURL(a.href);
       }, 1000);
+
+// Listen for incoming triad state from parent
+window.addEventListener('message', function(event) {
+  const msg = event.data;
+  if (msg && msg.type === 'LOAD_TRIAD_STATE' && msg.data) {
+    try {
+      triadData = JSON.parse(msg.data);
+      populateEchoes();
+      // Autosave to localStorage
+      localStorage.setItem('coreOverview_autosave', msg.data);
+      if (msg.filename) {
+        localStorage.setItem('coreOverview_autosave_filename', msg.filename);
+      }
+    } catch (e) {
+      alert('Failed to load Triad state: ' + e.message);
+    }
+  }
+});
+
+// On page load, try to restore autosaved state
+window.addEventListener('DOMContentLoaded', function() {
+  const autosave = localStorage.getItem('coreOverview_autosave');
+  if (autosave) {
+    try {
+      triadData = JSON.parse(autosave);
+      populateEchoes();
+      // Optionally, show a notification: "Restored last session"
+    } catch (e) {
+      // Optionally clear corrupted autosave
+      localStorage.removeItem('coreOverview_autosave');
+    }
+  }
+});
     };
   </script>
 </body>
