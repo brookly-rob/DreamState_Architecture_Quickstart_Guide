@@ -788,7 +788,6 @@
 
       function setupExpansionUploader(core, inputElement, selectElement) {
         if (!inputElement || !selectElement) return;
-
         inputElement.addEventListener("change", async () => {
           const glyph = selectElement.value;
           const file = inputElement.files[0];
@@ -1526,12 +1525,15 @@
           const saved = localStorage.getItem('triadforge-autosave');
           if (!saved) return false;
 
+
           const loadedState = JSON.parse(saved);
 
           if (!loadedState.identity || !loadedState.vector || !loadedState.thread || !loadedState.expansion || !loadedState.echoes) {
             showFeedbackMessage("Invalid autosave structure. Could not restore.", 'error');
             return false;
           }
+
+
 
           clearAllUI();
           coreData = makeBlankCoreData();
@@ -1589,26 +1591,27 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         showFeedbackMessage("Triad Forge state saved!");
-// Send state to parent for CoreOverview handoff
-if (window.parent && window.parent !== window) {
-  // Prompt user
-  const wantsCoreView = window.confirm('Would you like to view in Core Overview?');
-  window.parent.postMessage(
-    {
-      type: 'TRIADFORGE_SAVED',
-      data: stateToSave,
-      wantsCoreView: wantsCoreView,
-      filename: filename
-    },
-    '*'
-  );
-}
+
+        // Send state to parent for CoreOverview handoff
+        if (window.parent && window.parent !== window) {
+          // Prompt user
+          const wantsCoreView = window.confirm('Would you like to view in Core Overview?');
+          window.parent.postMessage({
+              type: 'TRIADFORGE_SAVED',
+              data: stateToSave,
+              wantsCoreView: wantsCoreView,
+              filename: filename
+            },
+            '*'
+          );
+        }
 
       }
 
       async function loadTriadState(file) {
         showLoading("Loading Triad State...");
         saveStateForUndo();
+        ejectAll();
         if (!file) {
           showFeedbackMessage("No file selected for loading.", 'error');
           return;
@@ -1715,6 +1718,7 @@ if (window.parent && window.parent !== window) {
 
       // Add this helper near loadTriadState()
       async function loadTriadStateFromData(data) {
+        ejectAll()
         showLoading("Loading Triad State...");
         saveStateForUndo();
         try {
@@ -2952,7 +2956,7 @@ const handleSlotToTriadForge = () => {
     if (window.updateMemoryTracker) window.updateMemoryTracker(core, glyph, isExpansion);
     window.coreDataVersion++;
     alert(`Slotted as Echo to TriadForge: ${core} ${glyph}${isExpansion ? " (Expansion)" : ""}`); 
-setupExpansionUploader(core, inputElement, selectElement);setupExpansionUploader(core, inputElement, selectElement);
+setupExpansionUploader(core, inputElement, selectElement);
 updatePrestigeProgressBar();
 autosave(); 
 
