@@ -489,6 +489,44 @@ loadSaveFileBtn.addEventListener('click', async () => {
     });
 
 
+window.addEventListener('message', function(event) {
+  const msg = event.data;
+  if (msg && msg.type === 'TRIADFORGE_SAVED') {
+    // Forward to CoreOverview
+    const coreOverviewFrame = document.getElementById('coreOverviewFrame');
+    if (coreOverviewFrame && coreOverviewFrame.contentWindow) {
+      coreOverviewFrame.contentWindow.postMessage(
+        {
+          type: 'LOAD_TRIAD_STATE',
+          data: msg.data,
+          filename: msg.filename || 'triad_loaded.json'
+        },
+        '*'
+      );
+      // Transition to CoreOverview if user requested
+      if (msg.wantsCoreView) {
+        // Hide Triadforge iframe/container
+        const triadForgeContainer = document.getElementById('embeddedAppContainer');
+        if (triadForgeContainer) {
+          triadForgeContainer.classList.add('hidden');
+          // Optional: clear src if you want to fully unload
+          const triadForgeFrame = document.getElementById('embeddedAppFrame');
+          if (triadForgeFrame) triadForgeFrame.src = '';
+        }
+        // Show CoreOverview iframe/container
+        const coreOverviewContainer = document.getElementById('coreOverviewContainer');
+        if (coreOverviewContainer) {
+          coreOverviewContainer.classList.remove('hidden');
+          // Scroll/focus for UX polish
+          coreOverviewContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }
+    }
+  }
+});
+
+
+
 // This will close any open tooltip when you tap outside a .tooltip-icon
 document.addEventListener('touchstart', function(event) {
   const open = document.querySelector('.tooltip-icon:focus');
