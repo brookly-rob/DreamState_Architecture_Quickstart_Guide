@@ -186,7 +186,6 @@ h3 {
   box-shadow: 0 4px 16px #0006;
   z-index: 1000;
   top: max(8px, min(92%, 50%));
-
 }
 
 /* ===========================================
@@ -194,16 +193,20 @@ h3 {
    =========================================== */
 
 /* Make tooltips more mobile friendly */
-@media (max-width: 700px) {
-    .tooltip-icon:hover::after,
-    .tooltip-icon:focus::after {
-        left: 0;
-        top: 120%;
-        transform: none;
-        min-width: 160px;
-        max-width: 90vw;
-        margin-top: 6px;
-    }
+@media (max-width: 800px) {
+  .tooltip-icon:hover::after,
+  .tooltip-icon:focus::after {
+    left: auto;
+    right: 120%;
+    top: 50%;
+    transform: translateY(-50%);
+    min-width: 200px;
+    max-width: 90vw;
+    margin-top: 0;
+    text-align: left;
+    box-sizing: border-box;
+    word-break: break-word;
+  }
 }
 
 /* Mobile Styles: Make everything fit, scrollable, and usable */
