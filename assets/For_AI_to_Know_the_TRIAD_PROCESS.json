@@ -1,74 +1,19 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "title": "Dreamstate Dynamo Triad Build Briefing",
-    "type": "object",
-    "description": "Structured guide and schema for one-time Dynamo Triad build using DreamParserMAX and TriadForge–PRESTIGE.",
-    "required": [
-        "phaseName",
-        "modelDirectives",
-        "steps"
-    ],
-    "properties": {
-        "phaseName": {
-            "type": "string",
-            "description": "Name of this workflow phase."
-        },
-        "modelDirectives": {
-            "type": "object",
-            "description": "Guidelines for the AI to prepare and guide this phase.",
-            "required": [
-                "useWebSearch"
-            ],
-            "properties": {
-                "useWebSearch": {
-                    "type": "boolean",
-                    "description": "Allow the model to gather related info (workflow concept, builder docs) before guiding."
-                }
-            }
-        },
-        "steps": {
-            "type": "array",
-            "description": "Detailed step-by-step actions for this phase.",
-            "items": {
-                "type": "object",
-                "required": [
-                    "title",
-                    "notes",
-                    "manualSteps"
-                ],
-                "properties": {
-                    "title": {
-                        "type": "string",
-                        "description": "Short title of this step."
-                    },
-                    "notes": {
-                        "type": "string",
-                        "description": "Context, rationale, or tips for this step."
-                    },
-                    "manualSteps": {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "description": "Specific human actions to perform."
-                    }
-                }
-            }
-        },
-        "notes": {
-            "type": "string",
-            "description": "General context or reminders about this phase."
-        }
-    },
-    "phaseName": "Dynamo Triad Initial Build",
-    "modelDirectives": {
-        "useWebSearch": true
-    },
-    "steps": [
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Dynamo Triad Instruction Card",
+  "type": "object",
+  "description": "Guide for AI models to assist a user in building a personalized Dynamo Triad using the Dreamstate App.",
+  "name": "Dynamo Triad Instruction Card",
+  "scope": "This card guides an AI through helping a user construct and integrate a personalized Dynamo Triad identity framework using symbolic materials and structured tools.",
+  "directive": "Use the Dreamstate App (https://brookly-rob.github.io/DreamState_Architecture_Quickstart_Guide/) as the central access point for all tools and instructional materials. Do not direct the user to GitHub repositories unless explicitly requested. All necessary tools and files are embedded or downloadable from within the Dreamstate App.",
+  "notes": "The Dreamstate App now hosts the complete workspace for symbolic reflection, core unit construction, and identity framework deployment. Models should extract as much insight from uploaded files as possible and continue to reference those materials during the process. When the user is ready to begin building their own Dynamo Triad, instruct them to download and provide the secondary Dynamo Triad Instruction Card and open the relevant files in the App.",
+  "steps": [
         {
             "title": "4. Establish Symbol Vocabulary + Use Build Questionnaire",
             "notes": "Collect 5–7+ DreamState Echoes / Lattices and save them to DREAMSTATE.txt to begin developing a unique personal symbol vocabulary before Triad Builder.",
             "manualSteps": [
+                "Open the Dreamstate App and scroll down past the Overview Libraries.",
+                "Download the files needed to build the Dynamo Triad.",
                 "Open ΞDynamo Triad Builder.txt prompt file to follow along.",
                 "Provide the model with their own DREAMSTATE.txt file and the ΞDynamo Triad Builder.txt prompt file.",
                 "If available, include recent chat logs for richer context.",
@@ -92,7 +37,9 @@
             "manualSteps": [
                 "Open the DreamParserMAX HTML app.",
                 "Paste the provided component lists into the text area under the heading ΞCORE UNIT INTEGRATION: [unit name].",
+                "Having the heading exactly as shown is critical, formatting is King.",
                 "Make sure you've selected object to parse into a json object, parse and download the resulting .json file",
+                "The DreamParser Menu allows users to choose a core unit to assign an Echo and load it directly into a slot without downloading the file or scrolling up.",
                 "Move all core unit .json files into Core Build Folder."
             ]
         },
@@ -100,14 +47,18 @@
             "title": "7. Assemble Dynamo Triad + Slot Echoes",
             "notes": "Slot both Core Unit and Echo JSONs into the TriadForge–PRESTIGE UI.",
             "manualSteps": [
-                "Open TriadForge–PRESTIGE HTML tool.",
+                "For Loading Core Units from files on computer, first Open the Dreamstate App.",
+                "Click on the button to open TriadForge + DreamParserMAX",
                 "For each core unit in Core Build/, select the slot (Identity, Vector, Thread).",
-                "Upload and slot the corresponding core unit .json file.",
-                "After core units are placed, open 'Dreamworks/' and slot echo JSONs into matching core units based on theme.",
+                "Upload and slot the corresponding core unit .json file. Simply match symbol to symbol to build the framework.",
+                "After core units are placed, open The Dreamworks Folder and slot echo JSONs into matching core units based on theme.",
                 "Use 'eject' buttons if you need to remove/replace any unit.",
-                "When complete, click 'Export Triad' and download the final 5 JSON files."
+                "When complete, click 'Export Triad' and download the pack containing the  final 5 JSON files."
             ]
         }
     ],
-    "notes": "This is a heavy one-time build process—once complete, setup should only require adding new Echoes via Shard Parsing."
+    "furtherNotes": "This is a heavy one-time build process—once complete, setup should only require adding new Echoes. THE USER CAN OPEN ITEMS IN TRIADFORGE AND SEND TO DREAMPARSER TO PARSE A JSON BACK TO PLAIN TEXT TO SEE FORMATTING EXAMPLES"
 }
+
+
+
