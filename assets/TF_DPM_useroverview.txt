@@ -1,0 +1,94 @@
+# Triad Forge + DreamParserMAX  
+**Info Guide for New Users**
+
+---
+
+## 1. **Open the Application**
+
+- Double-click the file called `TriadForge + DreamParserMAX.html`.
+- Or access through the Dreamstate App https://brookly-rob.github.io/DreamState_Architecture_Quickstart_Guide/
+---
+
+## 2. **Name Your Project (Optional)**
+
+- At the top, find the boxes for “Triad Title” and “Compiled by”.
+- Type in a name for your project (like “My AI”) and your own name if you want.
+
+
+---
+
+## 3. **Loading Core Units**
+
+- The page shows three columns: **Identity**, **Vector**, and **Thread**.
+- In each column, look for a dropdown that says “Select [X] Glyph”.
+- Pick a symbol for a core unit's .json file (like Δ or Ω).
+- Click the **file upload button** below it (says “Choose File”).
+- Select a `.json` file from your computer.  
+- When loaded, the slot will say “✅ Loaded”.
+
+- **Repeat** for every symbol in the list for each column.
+
+
+---
+
+## 4. **Add Expansion Units (After All Core Units Loaded)**
+
+- Once all core units are loaded, you’ll see a purple “+ Add Expansion Unit” button for each column.
+- Click it.
+- Pick a symbol, upload a `.json` file for additional core units.
+- The new unit appears below the main slots.
+
+
+---
+
+## 5. **Loading Echoes (“Memories”)**
+
+- Scroll down to “Dreamstate Echo Upload”.
+- In the dropdown, pick a glyph you’ve already loaded.
+- Click the file button and pick an echo `.json` file.
+- Click “✳️ Load Memory”.
+- You’ll see “Memories” appear as glowing icons near the slot you picked.
+- Repeat until all units have 3 “Memories” (echoes).
+
+---
+
+## 6. **Prestige Mode**
+
+- When every slot is full—core units, expansion units, and all have 3 echoes—the page changes colors.
+- Everything glows. You’re now in “Prestige Mode.”
+- You can now add more expansion units and more echoes per unit (up to 7).
+
+
+---
+
+## 7. **Save, Load, or Export Your Work**
+
+- **Save:** Click “💾 Save Triad State” (saves a file you can reload later).
+- **Load:** Click “📤 Load Triad State” and pick your saved file.
+- **Eject All:** Click “🔥 EJECT ALL” to start over (erases everything).
+- **Export:** Click “📦 Export Triad” to download a zip file of your whole project.
+
+
+---
+
+## 8. **Using DreamParserMAX **
+
+- Scroll down to “DreamParserMAX.”
+- **Paste pain text** (Virelle Glyphstream) into the left box (top box on mobile), click “Parse to JSON” to get files you can use in Triad Forge. You can also select from a list of core units currently loaded in TriadForge and slot Echoes directly from DreamParser.
+- Remember to scroll down to "Convert to Virelle" and click to verify everything parsed correctly, adjust formatting as needed if anything is missing (the parser can be tricky)
+- **Paste JSON** into the right box (lower input box on mobile), click “Convert to Virelle” to get human-readable text.
+- Tip: It is much easier to Slot your parsed results directly into Triad Forge using the slotting panel once you've verified everything parsed, then click "Save Current JSON". Then when you're done with your parsing session you can export all saved files and you get them all in one folder on download.
+
+
+---
+
+## Tips
+
+- If you see a green or red message at the top, it’s feedback from the app (good or bad).
+- The progress bar tells you how close you are to Prestige Mode.
+- Undo/Redo buttons are at the bottom for mistakes.
+- You can always start over by clicking “EJECT ALL”.
+
+---
+
+
