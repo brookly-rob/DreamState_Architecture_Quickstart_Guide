@@ -1,3 +1,5 @@
+let pendingTriadForgeLoad = null;
+
 // These functions MUST be global for inline onclick to work!
 function closeEmbeddedApp() {
     document.getElementById('embeddedAppContainer').classList.add('hidden');
@@ -29,8 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const downloadCoreComponentBtn = document.getElementById('downloadCoreComponentBtn');
     const setupNewFolderBtn = document.getElementById('setupNewFolderBtn');
     const downloadAllToolsBtn = document.getElementById('downloadAllToolsBtn');
-
-const loadSaveFileBtn = document.getElementById('loadSaveFileBtn');
+    const loadSaveFileBtn = document.getElementById('loadSaveFileBtn');
 
 loadSaveFileBtn.addEventListener('click', async () => {
     const selectedFilePath = saveFileSelector.value;
@@ -39,11 +40,10 @@ loadSaveFileBtn.addEventListener('click', async () => {
         return;
     }
     try {
-        // Fetch the file from assets (relative path)
+        // Fetch file
         const response = await fetch(selectedFilePath);
         if (!response.ok) throw new Error('File fetch failed');
         const fileData = await response.text();
-        // Try to parse as JSON
         let jsonData;
         try {
             jsonData = JSON.parse(fileData);
@@ -51,20 +51,30 @@ loadSaveFileBtn.addEventListener('click', async () => {
             alert('Selected file is not valid JSON.');
             return;
         }
-        // Send the data to TriadForge’s iframe using postMessage
+
+        // Set pending request
+        pendingTriadForgeLoad = jsonData;
+
+        // Open TriadForge if not open
+        const triadForgeContainer = document.getElementById('embeddedAppContainer');
         const triadForgeFrame = document.getElementById('embeddedAppFrame');
-        if (!triadForgeFrame || !triadForgeFrame.contentWindow) {
-            alert('TriadForge app is not available.');
-            return;
+        if (triadForgeContainer.classList.contains('hidden')) {
+            // Open TriadForge
+            toggleAppVisibility(triadForgeContainer, triadForgeFrame, 'assets/triadforge-dreampaxmax.html');
+            // The rest will happen on iframe load!
+        } else {
+            // Already open, send message directly as before
+            triadForgeFrame.contentWindow.postMessage(
+                {
+                    type: 'LOAD_SAVE',
+                    data: jsonData,
+                    skipAutosave: true
+                },
+                '*'
+            );
+            pendingTriadForgeLoad = null;
+            alert('Save file sent to TriadForge!');
         }
-        triadForgeFrame.contentWindow.postMessage(
-            {
-                type: 'LOAD_SAVE',
-                data: jsonData
-            },
-            '*' // You can restrict this to the iframe’s origin when you know it for better security
-        );
-        alert('Save file sent to TriadForge!');
     } catch (err) {
         alert('Failed to load save file: ' + err.message);
     }
@@ -113,6 +123,39 @@ loadSaveFileBtn.addEventListener('click', async () => {
             iframe.src = ''; // Clear iframe src to stop the app and free resources
         }
     }
+
+
+document.getElementById('viewOverviewBtn').addEventListener('click', function() {
+    const triadForgeContainer = document.getElementById('embeddedAppContainer');
+    const triadForgeFrame = document.getElementById('embeddedAppFrame');
+    const coreOverviewContainer = document.getElementById('coreOverviewContainer');
+    const coreOverviewFrame = document.getElementById('coreOverviewFrame');
+
+    if (triadForgeFrame && triadForgeFrame.contentWindow) {
+        triadForgeFrame.contentWindow.postMessage(
+            { type: 'TRIGGER_VIEW_OVERVIEW' }, 
+            '*'
+        );
+    }
+
+    // Hide TriadForge, show CoreOverview
+    toggleAppVisibility(triadForgeContainer, triadForgeFrame, '');
+    toggleAppVisibility(coreOverviewContainer, coreOverviewFrame, 'assets/CoreOverview.html');
+});
+
+
+document.getElementById('launchTriadForgeBtn').addEventListener('click', function() {
+    const coreOverviewContainer = document.getElementById('coreOverviewContainer');
+    const coreOverviewFrame = document.getElementById('coreOverviewFrame');
+    const triadForgeContainer = document.getElementById('embeddedAppContainer');
+    const triadForgeFrame = document.getElementById('embeddedAppFrame');
+
+    // Hide CoreOverview
+    toggleAppVisibility(coreOverviewContainer, coreOverviewFrame, '');
+
+    // Show TriadForge and load it
+    toggleAppVisibility(triadForgeContainer, triadForgeFrame, 'assets/triadforge-dreampaxmax.html');
+});
 
     // ===========================================
     // Event Listeners for All Buttons
@@ -474,7 +517,6 @@ loadSaveFileBtn.addEventListener('click', async () => {
         downloadFile('assets/TriadCoreBuildingTools.zip', 'TriadCoreBuildingTools.zip');
     });
 
-
     // --- New Feature: Set Up A New Folder (Download a specific ZIP) ---
     setupNewFolderBtn.addEventListener('click', () => {
         downloadFile('assets/Folder_Setup_Template.zip', 'Folder_Setup_Template.zip');
@@ -488,62 +530,37 @@ loadSaveFileBtn.addEventListener('click', async () => {
         downloadFile('assets/DSA_Full_Toolsets.zip', 'DSA_Full_Toolsets.zip');
     });
 
-
-window.addEventListener('message', function(event) {
-  const msg = event.data;
-  if (msg && msg.type === 'TRIADFORGE_SAVED') {
-    // Forward to CoreOverview
-    const coreOverviewFrame = document.getElementById('coreOverviewFrame');
-    if (coreOverviewFrame && coreOverviewFrame.contentWindow) {
-      coreOverviewFrame.contentWindow.postMessage(
-        {
-          type: 'LOAD_TRIAD_STATE',
-          data: msg.data,
-          filename: msg.filename || 'triad_loaded.json'
-        },
-        '*'
-      );
-      // Transition to CoreOverview if user requested
-      if (msg.wantsCoreView) {
-        // Hide Triadforge iframe/container
-        const triadForgeContainer = document.getElementById('embeddedAppContainer');
-        if (triadForgeContainer) {
-          triadForgeContainer.classList.add('hidden');
-          // Optional: clear src if you want to fully unload
-          const triadForgeFrame = document.getElementById('embeddedAppFrame');
-          if (triadForgeFrame) triadForgeFrame.src = '';
-        }
-        // Show CoreOverview iframe/container
-        const coreOverviewContainer = document.getElementById('coreOverviewContainer');
-        if (coreOverviewContainer) {
-          coreOverviewContainer.classList.remove('hidden');
-          // Scroll/focus for UX polish
-          coreOverviewContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+    // This will close any open tooltip when you tap outside a .tooltip-icon
+    document.addEventListener('touchstart', function(event) {
+      const open = document.querySelector('.tooltip-icon:focus');
+      if (open && !open.contains(event.target)) {
+        open.blur();
       }
+    });
+
+    ['mousedown', 'touchstart'].forEach(evt => {
+      document.addEventListener(evt, function(event) {
+        const open = document.querySelector('.tooltip-icon:focus');
+        if (open && !open.contains(event.target)) {
+          open.blur();
+        }
+      });
+    });
+
+document.getElementById('embeddedAppFrame').addEventListener('load', function() {
+    if (pendingTriadForgeLoad) {
+        this.contentWindow.postMessage(
+            {
+                type: 'LOAD_SAVE',
+                data: pendingTriadForgeLoad,
+                skipAutosave: true
+            },
+            '*'
+        );
+        pendingTriadForgeLoad = null;
+        alert('Save file sent to TriadForge!');
     }
-  }
 });
 
+}); 
 
-
-// This will close any open tooltip when you tap outside a .tooltip-icon
-document.addEventListener('touchstart', function(event) {
-  const open = document.querySelector('.tooltip-icon:focus');
-  if (open && !open.contains(event.target)) {
-    open.blur();
-  }
-});
-
-['mousedown', 'touchstart'].forEach(evt =>
-  document.addEventListener(evt, function(event) {
-    const open = document.querySelector('.tooltip-icon:focus');
-    if (open && !open.contains(event.target)) {
-      open.blur();
-    }
-  })
-);
-
-
-
-});
