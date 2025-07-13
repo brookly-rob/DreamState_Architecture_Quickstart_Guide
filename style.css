@@ -313,3 +313,83 @@ h3 {
         height: 85vh !important;
     }
 }
+
+
+
+#manualModal {
+  display: none;
+  position: fixed;
+  left: 0; top: 0;
+  width: 100vw; height: 100vh;
+  background: rgba(20,20,30,0.88);
+  z-index: 9999;
+  align-items: center; justify-content: center;
+}
+#manualModal > div {
+  background: #fff;
+  padding: 2rem 2.5rem;
+  max-width: 700px; width: 90%;
+  border-radius: 18px;
+  position: relative;
+  box-shadow: 0 10px 32px rgba(0,0,0,0.25);
+  border: 1px solid #222;
+}
+#manualModalContent {
+  white-space: pre-wrap;
+  max-height: 60vh;
+  overflow: auto;
+  color: #181818;
+  font-size: 1.11rem;
+  font-family: 'JetBrains Mono','Fira Mono','Menlo',monospace;
+  background: #f8f8f9;
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  border: 1px solid #ececec;
+  margin-bottom: 1.4rem;
+}
+#closeManualModal {
+  position: absolute;
+  top: 14px; right: 18px;
+  font-size: 1.6rem;
+  background: transparent;
+  border: none;
+  color: #222;
+  cursor: pointer;
+}
+#downloadManualFromModal {
+  background: linear-gradient(90deg, #2657eb 0%, #7a33ff 100%);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.6rem;
+  border-radius: 7px;
+  font-size: 1.08rem;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(40,40,90,0.08);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#downloadManualFromModal:hover {
+  background: linear-gradient(90deg, #7a33ff 0%, #2657eb 100%);
+}
+
+
+.main-action-btn {
+  background: linear-gradient(90deg, #9affd0 0%, #79e1bd 100%);
+  color: #5c2d91 !important; /* Deep purple, readable on light green */
+  font-weight: 600;
+  font-size: 1.08rem;
+  padding: 0.8rem 2.1rem;
+  border: none;
+  border-radius: 10px;
+  margin: 0.3rem 0.5rem 0.3rem 0;
+  box-shadow: 0 2px 16px rgba(40,40,90,0.09);
+  cursor: pointer;
+  transition: background 0.2s, transform 0.08s;
+  letter-spacing: 0.02em;
+}
+.main-action-btn:hover, .main-action-btn:focus {
+  background: linear-gradient(90deg, #79e1bd 0%, #9affd0 100%);
+  color: #2d155a; /* Even deeper purple on hover for fun */
+  transform: translateY(-2px) scale(1.02);
+  outline: none;
+}
