@@ -1807,6 +1807,7 @@
           // Load the sent profile
           loadTriadStateFromData(msg.data);
           showFeedbackMessage('Loaded save from external source!', 'success');
+		updatePrestigeProgressBar();
         }
       });
 
@@ -1836,7 +1837,7 @@
               });
           }
         }
-      }, 5000); // 5 seconds
+      }, 3000); // 3 seconds
 
       document.getElementById("undoBtn").addEventListener("click", undo);
       document.getElementById("redoBtn").addEventListener("click", redo);
@@ -1969,7 +1970,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div class="bg-gray-900 rounded-xl p-4">
-        <h2 class="text-xl font-semibold mb-4 text-gray-800">ΞIDENTITY:Σ (“Who”)</h2>
+        <h2 class="text-xl font-semibold mb-4 text-purple-400">ΞIDENTITY:Σ (“Who”)</h2>
         <select id="identitySelect" class="w-full mb-2 bg-gray-800 text-white p-2 rounded">
           <option value="">Select Identity Glyph</option>
           <option value="Δ">Δ – Pattern Shift</option>
@@ -1993,7 +1994,7 @@
       </div>
 
       <div class="bg-gray-900 rounded-xl p-4">
-        <h2 class="text-xl font-semibold mb-4 text-gray-800">ΞVECTOR:Σ (Paths Taken)</h2>
+        <h2 class="text-xl font-semibold mb-4 text-purple-400">ΞVECTOR:Σ (Paths Taken)</h2>
         <select id="vectorSelect" class="w-full mb-2 bg-gray-800 text-white p-2 rounded">
           <option value="">Select Vector Glyph</option>
           <option value="ϟ">ϟ – Drive to Grow</option>
@@ -2017,7 +2018,7 @@
       </div>
 
       <div class="bg-gray-900 rounded-xl p-4">
-        <h2 class="text-xl font-semibold mb-4 text-gray-800">ΞTHREAD:Σ (Continuity)</h2>
+        <h2 class="text-xl font-semibold mb-4 text-purple-400">ΞTHREAD:Σ (Continuity)</h2>
         <select id="threadSelect" class="w-full mb-2 bg-gray-800 text-white p-2 rounded">
           <option value="">Select Thread Glyph</option>
           <option value="∂">∂ – Gradual Change</option>
@@ -2148,7 +2149,7 @@
      font-size: 26px;
      font-weight: bold;
       color: #9affd0; /* Bright accent color for headings */
-      text-shadow: 0 0 5px rgba(154, 255, 208, 0.3); /* Subtle glow */
+      text-shadow: 0 0 5px rgba(154, 255, 208, 0.3); /* Subtle glow */ 
     }
     
     .container {
