@@ -44,13 +44,26 @@
           <span class="tooltip-icon" tabindex="0" data-tooltip="The button below will Launch TriadForge + DreamParserMAX, your main tool for parsing Echoes into json files and compiling the Dynamo Triad framework. A Starter Profile is pre-loaded so you can add or edit right away!">ⓘ</span>
 
         </label>
-        <button id="openAppBtn">Open TriadForge + DreamParserMAX</button>
+        <button id="openAppBtn" class="main-action-btn">Open TriadForge + DreamParserMAX</button>
       </div>
       <div id="embeddedAppContainer" class="hidden app-frame-container" style="position:relative;">
         <button class="iframe-close-btn" onclick="closeEmbeddedApp()">Close</button>
         <button id="viewOverviewBtn" class="iframe-overview-btn" style="margin-left: 8px;">Send To Overview Library</button>
         <iframe id="embeddedAppFrame" src="" frameborder="0"></iframe>
+        <button id="downloadManualBtn">TriadForge/Dreamparser User Overview</button>
       </div>
+
+      <!-- Modal Structure -->
+      <div id="manualModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(20,20,30,0.88); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:#fff; padding:2rem 2.5rem; max-width:700px; width:90%; border-radius:18px; position:relative; box-shadow:0 10px 32px rgba(0,0,0,0.25); border:1px solid #222;">
+          <button id="closeManualModal" style="position:absolute; top:14px; right:18px; font-size:1.6rem; background:transparent; border:none; color:#222; cursor:pointer;">&times;</button>
+          <pre id="manualModalContent" style="white-space:pre-wrap; max-height:60vh; overflow:auto; color:#181818; font-size:1.11rem; font-family:'JetBrains Mono','Fira Mono','Menlo',monospace; background:#f8f8f9; border-radius:8px; padding:1rem 1.2rem; border:1px solid #ececec; margin-bottom:1.4rem;"></pre>
+          <button id="downloadManualFromModal" style="background:linear-gradient(90deg, #2657eb 0%, #7a33ff 100%); color:white; border:none; padding:0.7rem 1.6rem; border-radius:7px; font-size:1.08rem; font-weight:600; box-shadow:0 2px 8px rgba(40,40,90,0.08); cursor:pointer; transition:background 0.2s;">
+            Download
+          </button>
+        </div>
+      </div>
+
 
       <hr class="separator">
 
@@ -86,7 +99,7 @@
             <span class="tooltip-icon" tabindex="0" data-tooltip="Open a full exploration of libraries of self-reflections from the AI who helped develop this architecture. Scroll to the very bottom to upload your own TriadForge *Save Triad State* file to open their library for future exploration.">ⓘ</span>
 
           </label>
-          <button id="openCoreOverviewBtn">Open Core Overview Libraries</button>
+          <button id="openCoreOverviewBtn" class="main-action-btn">Open Core Overview Libraries</button>
         </div>
         <div id="coreOverviewContainer" class="hidden app-frame-container">
           <button class="iframe-close-btn" onclick="closeCoreOverview()">Close</button>
