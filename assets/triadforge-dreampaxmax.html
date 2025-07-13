@@ -132,6 +132,9 @@
   </style>
 
   <script>
+    let shouldSkipAutosave = false;
+
+
     let undoStack = [];
     let redoStack = [];
 
@@ -245,6 +248,8 @@
         },
         isPrestigeMode: false // New flag for Prestige Mode status
       };
+
+
 
       // --- Utility Functions ---
       function showFeedbackMessage(message, type = 'success', duration = 3000) {
@@ -1538,7 +1543,7 @@
           clearAllUI();
           coreData = makeBlankCoreData();
           Object.assign(coreData, loadedState);
-          console.log(coreData)
+          console.log(coreData);
 
           window.coreData = coreData;
           window.coreDataVersion++;
@@ -1572,13 +1577,7 @@
         }
         filename += `_${new Date().toISOString().slice(0,10)}.json`;
 
-        const dataToSave = {
-          ...coreData
-        };
-        dataToSave.triadTitle = document.getElementById("triadTitle").value;
-        dataToSave.compiledBy = document.getElementById("compiledBy").value;
-
-        const stateToSave = JSON.stringify(dataToSave, null, 2);
+        const stateToSave = getTriadStateForExport();
         const blob = new Blob([stateToSave], {
           type: 'application/json'
         });
@@ -1591,22 +1590,32 @@
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
         showFeedbackMessage("Triad Forge state saved!");
-
-        // Send state to parent for CoreOverview handoff
-        if (window.parent && window.parent !== window) {
-          // Prompt user
-          const wantsCoreView = window.confirm('Would you like to view in Core Overview?');
-          window.parent.postMessage({
-              type: 'TRIADFORGE_SAVED',
-              data: stateToSave,
-              wantsCoreView: wantsCoreView,
-              filename: filename
-            },
-            '*'
-          );
-        }
-
       }
+
+      function stashTriadStateForOverview() {
+        // Get the JSON string using your export logic
+        const stateToSave = getTriadStateForExport(); // Should return JSON.stringify'd object
+        localStorage.setItem('triadforge-autosave', stateToSave);
+        // Optionally: you can add a flag or show a UI feedback
+      }
+
+      function getTriadStateForExport() {
+        // Always use latest in-memory coreData (not localStorage!)
+        let triadTitle = '';
+        let compiledBy = '';
+        try {
+          triadTitle = document.getElementById("triadTitle").value || '';
+          compiledBy = document.getElementById("compiledBy").value || '';
+        } catch {}
+        return JSON.stringify({
+          ...window.coreData,
+          triadTitle,
+          compiledBy
+        }, null, 2);
+      }
+
+
+
 
       async function loadTriadState(file) {
         showLoading("Loading Triad State...");
@@ -1684,7 +1693,7 @@
 
       function ejectAll() {
         saveStateForUndo();
-        if (confirm("Are you sure you want to eject ALL loaded units and echoes?")) {
+        if (confirm("Are you sure you want to eject ALL loaded units and echoes? \nIf you are loading a new core now click OK")) {
           coreData = {
             identity: {},
             vector: {},
@@ -1718,7 +1727,7 @@
 
       // Add this helper near loadTriadState()
       async function loadTriadStateFromData(data) {
-        ejectAll()
+        ejectAll();
         showLoading("Loading Triad State...");
         saveStateForUndo();
         try {
@@ -1783,28 +1792,51 @@
       });
       document.getElementById("ejectAllBtn").addEventListener("click", ejectAll);
       document.getElementById("exportTriadBtn").addEventListener("click", exportTriadForgeState); // New export button listener
-      if (localStorage.getItem('triadforge-autosave')) {
-        if (confirm('Restore previous autosave?')) {
-          restoreAutosave();
-        }
-      } else {
-        // Try to fetch and load default starter framework
-        fetch('triad_starterframework.json')
-          .then(resp => {
-            if (!resp.ok) throw new Error('not found');
-            return resp.text();
-          })
-          .then(text => {
-            let json = JSON.parse(text);
-            loadTriadStateFromData(json);
-            showFeedbackMessage('Loaded starter framework!', 'success');
-          })
-          .catch(() => {
-            // If file not found or error, just stay blank (current behavior)
-            console.log('No starter framework found; starting with blank state.');
-          });
-      }
 
+
+      // Accept LOAD_SAVE messages from parent window
+      window.addEventListener('message', (event) => {
+        // Optionally: check event.origin here for security!
+        const msg = event.data;
+        console.log('[TriadForge] Received postMessage:', msg);
+        if (msg && msg.type === 'LOAD_SAVE' && msg.data) {
+          // Set autosave skip flag if present
+          if (msg.skipAutosave) {
+            shouldSkipAutosave = true;
+          }
+          // Load the sent profile
+          loadTriadStateFromData(msg.data);
+          showFeedbackMessage('Loaded save from external source!', 'success');
+        }
+      });
+
+      // DELAYED AUTOSAVE LOGIC
+
+      setTimeout(() => {
+        if (!shouldSkipAutosave) {
+          if (localStorage.getItem('triadforge-autosave')) {
+            if (confirm('Restore previous autosave?')) {
+              restoreAutosave();
+            }
+          } else {
+            // Try to fetch and load default starter framework
+            fetch('triad_starterframework.json')
+              .then(resp => {
+                if (!resp.ok) throw new Error('not found');
+                return resp.text();
+              })
+              .then(text => {
+                let json = JSON.parse(text);
+                loadTriadStateFromData(json);
+                showFeedbackMessage('Loaded starter framework!', 'success');
+              })
+              .catch(() => {
+                // If file not found or error, just stay blank (current behavior)
+                console.log('No starter framework found; starting with blank state.');
+              });
+          }
+        }
+      }, 5000); // 5 seconds
 
       document.getElementById("undoBtn").addEventListener("click", undo);
       document.getElementById("redoBtn").addEventListener("click", redo);
@@ -1895,17 +1927,15 @@
         return 'Are you sure? Unsaved changes will be lost.';
       });
 
-      // Accept LOAD_SAVE messages from parent window
-      window.addEventListener('message', (event) => {
-        // Optionally: check event.origin here for security!
-        const msg = event.data;
-        console.log('[TriadForge] Received postMessage:', msg);
-        if (msg && msg.type === 'LOAD_SAVE' && msg.data) {
-          console.log('[TriadForge] Data to load:', msg.data);
-          loadTriadStateFromData(msg.data);
-          showFeedbackMessage('Loaded save from external source!', 'success');
+
+
+      window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'TRIGGER_VIEW_OVERVIEW') {
+          stashTriadStateForOverview();
         }
       });
+
+
 
     });
   </script>
@@ -1924,10 +1954,10 @@
     <h1 class="text-4xl font-bold mb-6 text-center text-gray-800">⚙️ The Triad Forge</h1>
 
     <div class="bg-gray-900 rounded-xl p-4 mb-6">
-      <label class="block mb-2">Triad Title (optional)</label>
-      <input id="triadTitle" type="text" placeholder="(THE AI's NAME)" class="w-full bg-gray-800 text-white p-2 rounded mb-4" />
-      <label class="block mb-2">Compiled by (optional)</label>
-      <input id="compiledBy" type="text" placeholder="(YOUR NAME)" class="w-full bg-gray-800 text-white p-2 rounded" />
+      <label class="block mb-2">Name who is described in this Triad:</label>
+      <input id="triadTitle" type="text" placeholder="ENTER NAME" class="w-full bg-gray-800 text-white p-2 rounded mb-4" />
+      <label class="block mb-2">Triad Compiled by (optional):</label>
+      <input id="compiledBy" type="text" placeholder="*YOUR* NAME HERE" class="w-full bg-gray-800 text-white p-2 rounded" />
     </div>
 
     <div class="w-full bg-gray-300 rounded h-6 my-4">
