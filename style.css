@@ -270,19 +270,31 @@ h3 {
         border: none;
         background: #fff;
     }
-    .iframe-close-btn {
-        position: sticky;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        background: #23233b;
-        color: #9affd0;
-        font-size: 1.3em;
-        padding: 14px 0;
-        border: none;
-        z-index: 5100;
-        text-align: center;
-    }
+ .iframe-close-btn,
+.iframe-overview-btn {
+  position: absolute;
+  top: 12px;
+  /* Adjust left/right as needed for your design */
+  padding: 6px 12px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 4px;
+  background: rgba(245, 245, 245, 0.7);
+  cursor: pointer;
+  transition: background 0.2s;
+  z-index: 10;
+}
+.iframe-close-btn {
+  right: 12px;
+}
+.iframe-overview-btn {
+  left: 12px; /* space it out from the close button */
+  background: rgba(167, 139, 250, 0.7);
+  color: #fff;
+}
+.iframe-overview-btn:hover {
+  background: #7a2ed1;
+}
     .button-group-vertical {
         gap: 15px;
     }
