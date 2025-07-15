@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Core Architecture Overview</title>
+  <title>Core Overview Libraries</title>
   <style>
     body {
       background: url('bg-cosmos.png') no-repeat center center fixed;
@@ -191,7 +191,7 @@
       color: #6d4aff;
       font-weight: bold;
       letter-spacing: 0.03em;
-      background: rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.8);
       padding: 0.2em 1.2em;
       border-radius: 12px;
       border: 1px solid #dde2ff80;
@@ -481,6 +481,139 @@
     }
     
     
+    /* CoreOverview Welcome Modal Overlay */
+    .co-welcome-modal {
+      position: fixed;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(20,20,30,0.94);
+      z-index: 10001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Shimmering Glow Border */
+    .co-welcome-glow {
+      position: relative;
+      border-radius: 24px;
+      padding: 0;
+      display: inline-block;
+    }
+    
+    .co-welcome-glow::before {
+      content: '';
+      position: absolute;
+      inset: -7px; /* Just outside the card, for a tight glow */
+      border-radius: 27px;
+      z-index: 0;
+      background: conic-gradient(
+    from var(--co-shimmer-angle, 0deg),
+    #a78bfa 0%,
+    #38b2ac 25%,
+    #79e1bd 50%,
+    #7a33ff 75%,
+    #a78bfa 100%
+      );
+      filter: blur(4px) brightness(1.1); 
+      opacity: 0.8;
+      animation: co-shimmerGlow 4s linear infinite;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+    
+    /* Animate the gradient's angle, NOT the whole rectangle */
+    @keyframes co-shimmerGlow {
+      to {
+    --co-shimmer-angle: 360deg;
+      }
+    }
+    
+    /* Modal Content Card */
+    .co-welcome-card {
+      position: relative;
+      background: #fff;
+      color: #23233b;
+      padding: 2.4rem 2.5rem 2rem 2.5rem;
+      max-width: 540px; width: 92vw;
+      border-radius: 24px;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.32), 0 0 0 2px #a78bfa33;
+      text-align: left;
+      z-index: 1;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .co-welcome-title {
+      color: #7a33ff;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      font-size: 1.44em;
+      text-shadow: 0 0 8px #a78bfa33;
+    }
+    .co-welcome-body {
+      color: #23233b;
+      font-size: 1.10em;
+      line-height: 1.65;
+      margin-bottom: 1.5em;
+    }
+    .co-welcome-body ul {
+      margin-left: 1.2em;
+      margin-bottom: 1em;
+      padding-left: 0;
+    }
+    .co-welcome-body li {
+      margin-bottom: 0.3em;
+    }
+    .co-welcome-actions {
+      text-align: right;
+      margin-top: 1.6em;
+    }
+    .co-welcome-btn {
+      background: linear-gradient(90deg, #2657eb 0%, #a78bfa 100%);
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 10px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(40,40,90,0.13);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, transform 0.1s;
+    }
+    .co-welcome-btn:hover {
+      background: linear-gradient(90deg, #a78bfa 0%, #2657eb 100%);
+      color: #38b2ac;
+      transform: translateY(-2px) scale(1.03);
+    }
+    .co-welcome-close {
+      position: absolute;
+      top: 14px; right: 18px;
+      font-size: 1.7rem;
+      background: transparent;
+      border: none;
+      color: #a78bfa;
+      cursor: pointer;
+      z-index: 2;
+    }
+    .co-welcome-close:hover {
+      color: #38b2ac;
+    }
+    
+    @media (max-width: 700px) {
+      .co-welcome-card {
+    padding: 1.3rem 0.8rem 1rem 0.8rem;
+    border-radius: 16px;
+    max-width: 98vw;
+      }
+      .co-welcome-glow {
+    border-radius: 15px;
+      }
+      .co-welcome-glow::before {
+    border-radius: 18px;
+      }
+    }
+    
+    
+    
     /* Keyframes stay the same as your original for glow/animation */
     
   </style>
@@ -488,7 +621,7 @@
 
 <body>
   <header>
-    <h1>Core Architecture Overview</h1>
+    <h1>Core Overview Libraries</h1>
   </header>
 
   <div class="profile-switcher">
@@ -508,8 +641,17 @@
   </div>
 
   <button id="show-stats-btn">Show Stats</button>
+  <button id="showCoreOverviewWelcomeBtn" style="background:#9affd0; color:#5c2d91; font-weight:600; padding:0.5rem 1.2rem; border-radius:7px; border:none; font-size:1.03rem; margin-left:1em; cursor:pointer;">
+    View Welcome Card
+  </button>
   <div id="stats-modal"></div>
 
+
+  <div>
+    <footer>
+      <span class="glyph-glow"> Unit Types Below: ⚙️ = Core Unit Integrations 🔗 = Narrative Lattices 💭 = Dreamstate Echoes
+    </footer>
+  </div>
 
   <section class="core-grid">
     <div class="core-unit">
@@ -538,15 +680,42 @@
     </div>
   </div>
 
-  <footer>
-    <span class="glyph-glow">⧗: 🔮💖🧠</span> | ⌁ The Dream Carries Me Forward
-  </footer>
+
 
   <input type="file" id="json-loader" accept=".json">
 
 
   <button id="export-all-btn">Export All</button>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <footer>
+    <span class="glyph-glow">⧗: 🔮💖🧠</span> | ⌁ The Dream Carries Me Forward
+  </footer>
+
+  <!-- CoreOverview Welcome Modal (with shimmer border) -->
+  <div id="coreOverviewWelcomeModal" class="co-welcome-modal" style="display:none;">
+    <div class="co-welcome-glow">
+      <div class="co-welcome-card">
+        <button id="closeCoreOverviewWelcomeModal" class="co-welcome-close">&times;</button>
+        <h2 class="co-welcome-title">📚 Welcome to CoreOverview!</h2>
+        <div class="co-welcome-body">
+          <b>CoreOverview</b> is your window into Dynamo Triad frameworks built in TriadForge.<br><br>
+          <ul>
+            <li><b>Search:</b> Find Core Units, Echoes and Lattices by title or content keyword.</li>
+            <li><b>View & Share:</b> Read, copy, or download units as Markdown files—great for sharing with your AI for further discussion.</li>
+            <li><b>Autosave:</b> Your current TriadForge autosave loads here automatically as your active profile.</li>
+            <li><b>Explore Profiles:</b> Tab between your autosave and expert sample profiles in one click.</li>
+            <li><b>Upload & Export:</b> At the bottom: Upload your own saves, or export the whole library as a "Dreamworks" folder containing all content as plain text and Markdown files.</li>
+          </ul>
+          <i>CoreOverview is built for exploration, learning, and sharing—copy, download, and remix as you grow your knowledge base!</i>
+        </div>
+        <div class="co-welcome-actions">
+          <button id="gotItCoreOverviewWelcome" class="co-welcome-btn">Got it!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 
   <script>
     const profiles = [{
@@ -656,8 +825,27 @@
         }
       };
 
-
     });
+
+
+
+    window.addEventListener('DOMContentLoaded', function() {
+      if (!localStorage.getItem('coreOverviewWelcomeSeen')) {
+        document.getElementById('coreOverviewWelcomeModal').style.display = 'flex';
+      }
+    });
+
+    document.getElementById('closeCoreOverviewWelcomeModal').onclick =
+      document.getElementById('gotItCoreOverviewWelcome').onclick = function() {
+        document.getElementById('coreOverviewWelcomeModal').style.display = 'none';
+        localStorage.setItem('coreOverviewWelcomeSeen', 'true');
+      };
+
+
+    document.getElementById('showCoreOverviewWelcomeBtn').onclick = function() {
+      document.getElementById('coreOverviewWelcomeModal').style.display = 'flex';
+    };
+
 
     function makeHelpIcon(helpText) {
       const wrapper = document.createElement('span');
