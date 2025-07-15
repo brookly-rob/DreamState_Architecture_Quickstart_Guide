@@ -42,52 +42,73 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 loadSaveFileBtn.addEventListener('click', async () => {
+
     const selectedFilePath = saveFileSelector.value;
     if (!selectedFilePath) {
         alert('Please select a save file to load into TriadForge.');
         return;
     }
-    try {
-        // Fetch file
-        const response = await fetch(selectedFilePath);
-        if (!response.ok) throw new Error('File fetch failed');
-        const fileData = await response.text();
-        let jsonData;
-        try {
-            jsonData = JSON.parse(fileData);
-        } catch (e) {
-            alert('Selected file is not valid JSON.');
-            return;
-        }
 
-        // Set pending request
-        pendingTriadForgeLoad = jsonData;
+    // Show warning and branch on user choice:
+    const warningMsg = `⚠️ Loading a profile will overwrite the current active autosave in TriadForge.
 
-        // Open TriadForge if not open
-        const triadForgeContainer = document.getElementById('embeddedAppContainer');
-        const triadForgeFrame = document.getElementById('embeddedAppFrame');
-        if (triadForgeContainer.classList.contains('hidden')) {
-            // Open TriadForge
-            toggleAppVisibility(triadForgeContainer, triadForgeFrame, 'assets/triadforge-dreampaxmax.html');
-            // The rest will happen on iframe load!
-        } else {
-            // Already open, send message directly as before
-            triadForgeFrame.contentWindow.postMessage(
-                {
-                    type: 'LOAD_SAVE',
-                    data: jsonData,
-                    skipAutosave: true
-                },
-                '*'
-            );
-            pendingTriadForgeLoad = null;
-            alert('Save file sent to TriadForge!');
-        }
-    } catch (err) {
-        alert('Failed to load save file: ' + err.message);
+If you have unsaved progress:
+- Click Cancel and TriadForge will still open.
+- Let your latest autosave reload.
+- Click "Save Triad State" in TriadForge and download your .json backup.
+- After saving, close TriadForge and return here to load other profiles when your work is safe.
+
+To restore your work later, open TriadForge, click "Load Triad State", and select your backup.
+
+Do you want to CONTINUE and LOAD the new profile now? (OK = Load, Cancel = Just open TriadForge)`;
+
+    const triadForgeContainer = document.getElementById('embeddedAppContainer');
+    const triadForgeFrame = document.getElementById('embeddedAppFrame');
+
+    // Always open TriadForge, regardless of user choice
+    if (triadForgeContainer.classList.contains('hidden')) {
+        toggleAppVisibility(triadForgeContainer, triadForgeFrame, 'assets/triadforge-dreampaxmax.html');
+        // The rest will happen on iframe load (if needed)
     }
-});
 
+    // If user confirmed, proceed to fetch and load the profile
+    if (window.confirm(warningMsg)) {
+        try {
+            // Fetch file
+            const response = await fetch(selectedFilePath);
+            if (!response.ok) throw new Error('File fetch failed');
+            const fileData = await response.text();
+            let jsonData;
+            try {
+                jsonData = JSON.parse(fileData);
+            } catch (e) {
+                alert('Selected file is not valid JSON.');
+                return;
+            }
+
+            // Set pending request
+            pendingTriadForgeLoad = jsonData;
+
+            if (!triadForgeContainer.classList.contains('hidden')) {
+                // Already open, send message directly as before
+                triadForgeFrame.contentWindow.postMessage(
+                    {
+                        type: 'LOAD_SAVE',
+                        data: jsonData,
+                        skipAutosave: true
+                    },
+                    '*'
+                );
+                pendingTriadForgeLoad = null;
+                alert('Save file sent to TriadForge!');
+            }
+            // If TriadForge just opened, pendingTriadForgeLoad will be handled on iframe load
+        } catch (err) {
+            alert('Failed to load save file: ' + err.message);
+        }
+    }
+    // If user cancels: TriadForge is just opened, and nothing is loaded.
+});
     // Onboarding Modal
     if (!localStorage.getItem('dreamstate_onboarding_shown')) {
         document.getElementById('onboardingModal').style.display = 'flex';
