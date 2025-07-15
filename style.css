@@ -316,6 +316,8 @@ h3 {
 
 
 #manualModal {
+  align-items: flex-start !important; /* Start at the top */
+  overflow-y: auto !important;        /* Allow scrolling if needed */
   display: none;
   position: fixed;
   left: 0; top: 0;
