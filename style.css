@@ -124,7 +124,6 @@ h3 {
     border: 1px solid #5a5a9a;
     min-width: 300px;
     padding-right: 3.0em;
-    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%204%205%22%3E%3Cpath%20fill%3D%22%23e0e0e0%22%20d%3D%22M2%200L0%202h4zm0%205L0%203h4z%22%2F%3E%3C%2Fsvg%3E');
 }
 
 /* Embedded App Container (iframe) */
@@ -161,7 +160,7 @@ h3 {
 /* Tooltip styles */
 .tooltip-icon {
   cursor: pointer;
-  color: #9affd0;
+  color: #38b2ac;
   margin-left: 8px;
   font-size: 1.08em;
   vertical-align: middle;
@@ -374,7 +373,7 @@ h3 {
 
 
 .main-action-btn {
-  background: linear-gradient(90deg, #9affd0 0%, #79e1bd 100%);
+  background: linear-gradient(90deg, #38b2ac 0%, #79e1bd 100%);
   color: #5c2d91 !important; /* Deep purple, readable on light green */
   font-weight: 600;
   font-size: 1.08rem;
@@ -388,7 +387,7 @@ h3 {
   letter-spacing: 0.02em;
 }
 .main-action-btn:hover, .main-action-btn:focus {
-  background: linear-gradient(90deg, #79e1bd 0%, #9affd0 100%);
+  background: linear-gradient(90deg, #79e1bd 0%, #38b2ac 100%);
   color: #2d155a; /* Even deeper purple on hover for fun */
   transform: translateY(-2px) scale(1.02);
   outline: none;
