@@ -270,6 +270,12 @@
       }
     }
     
+
+#stateManagementPanel .build-deploy-btn {
+  flex-basis: 100%;
+  margin-top: 0.5em;
+}
+
   </style>
 
   <script>
@@ -2221,14 +2227,20 @@
 
     <div class="mt-10">
       <h2 class="text-xl font-semibold mb-2 text-gray-800">💾 Triad State Management</h2>
-      <div id="stateManagementPanel" class="bg-gray-900 p-4 rounded-xl flex space-x-4">
-        <button id="saveStateBtn" class="bg-teal-600 hover:bg-teal-700 px-4 py-2 rounded">💾 Save Triad State</button>
-        <button id="loadStateBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">📤 Load Triad State</button>
-        <input type="file" id="loadStateInput" accept=".json" class="hidden" />
-        <button id="ejectAllBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">🔥 EJECT ALL</button>
-        <button id="exportTriadBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">⚙️ BUILD DEPLOYMENTS</button>
-      </div>
-    </div>
+<div id="stateManagementPanel" class="bg-gray-900 p-4 rounded-xl flex flex-col space-y-4">
+  <div class="flex space-x-4">
+    <button id="saveStateBtn" class="bg-teal-600 hover:bg-teal-700 px-4 py-2 rounded">💾 Save Triad State</button>
+    <button id="loadStateBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">📤 Load Triad State</button>
+    <input type="file" id="loadStateInput" accept=".json" class="hidden" />
+    <button id="ejectAllBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">🔥 EJECT ALL</button>
+  </div>
+  <div>
+    <button id="exportTriadBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded build-deploy-btn">
+      ⚙️ BUILD DEPLOYMENTS
+    </button>
+  </div>
+</div>
+
  
   <div id="feedbackMessage" class="feedback-message"></div>
 
