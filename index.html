@@ -40,7 +40,7 @@
     <div class="section">
       <div class="button-item">
         <label>
-          Building the framework:
+          BUILDING/EDITING AN IDENTITY FRAMEWORK:
           <span class="tooltip-icon" tabindex="0" data-tooltip="The button below will Launch TriadForge + DreamParserMAX, your main tool for parsing Echoes into json files and compiling the Dynamo Triad framework. A Starter Profile is pre-loaded so you can add or edit right away!">ⓘ</span>
 
         </label>
@@ -48,34 +48,49 @@
       </div>
       <div id="embeddedAppContainer" class="hidden app-frame-container" style="position:relative;">
         <button class="iframe-close-btn" onclick="closeEmbeddedApp()">Close</button>
-        <button id="viewOverviewBtn" class="iframe-overview-btn" style="margin-left: 8px;">Send To Overview Library</button>
+        <button id="viewOverviewBtn" class="iframe-overview-btn" style="margin-left: 8px;">View in Overview Library</button>
         <iframe id="embeddedAppFrame" src="" frameborder="0"></iframe>
-        <button id="downloadManualBtn">TriadForge/Dreamparser User Overview</button>
+        <button id="downloadManualBtn" class="main-action-btn">TriadForge/Dreamparser User Overview</button>
       </div>
 
-      <!-- Modal Structure -->
-      <div id="manualModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(20,20,30,0.88); z-index:9999; align-items:center; justify-content:center;">
-        <div style="background:#fff; padding:2rem 2.5rem; max-width:700px; width:90%; border-radius:18px; position:relative; box-shadow:0 10px 32px rgba(0,0,0,0.25); border:1px solid #222;">
-          <button id="closeManualModal" style="position:absolute; top:14px; right:18px; font-size:1.6rem; background:transparent; border:none; color:#222; cursor:pointer;">&times;</button>
-          <pre id="manualModalContent" style="white-space:pre-wrap; max-height:60vh; overflow:auto; color:#181818; font-size:1.11rem; font-family:'JetBrains Mono','Fira Mono','Menlo',monospace; background:#f8f8f9; border-radius:8px; padding:1rem 1.2rem; border:1px solid #ececec; margin-bottom:1.4rem;"></pre>
-          <button id="downloadManualFromModal" style="background:linear-gradient(90deg, #2657eb 0%, #7a33ff 100%); color:white; border:none; padding:0.7rem 1.6rem; border-radius:7px; font-size:1.08rem; font-weight:600; box-shadow:0 2px 8px rgba(40,40,90,0.08); cursor:pointer; transition:background 0.2s;">
-            Download
-          </button>
-        </div>
+<!-- Modal Structure -->
+<div id="manualModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(20,20,30,0.88); z-index:9999; align-items:center; justify-content:center;">
+  <div style="background:#fff; padding:2rem 2.5rem; max-width:700px; width:90%; border-radius:18px; position:relative; box-shadow:0 10px 32px rgba(0,0,0,0.25); border:1px solid #222;">
+    <button id="closeManualModal" style="position:absolute; top:14px; right:18px; font-size:1.6rem; background:transparent; border:none; color:#222; cursor:pointer;">&times;</button>
+    <pre id="manualModalContent" style="white-space:pre-wrap; max-height:60vh; overflow:auto; color:#181818; font-size:1.11rem; font-family:'JetBrains Mono','Fira Mono','Menlo',monospace; background:#f8f8f9; border-radius:8px; padding:1rem 1.2rem; border:1px solid #ececec; margin-bottom:1.4rem;"></pre>
+    <button id="downloadManualFromModal" style="background:linear-gradient(90deg, #2657eb 0%, #7a33ff 100%); color:white; border:none; padding:0.7rem 1.6rem; border-radius:7px; font-size:1.08rem; font-weight:600; box-shadow:0 2px 8px rgba(40,40,90,0.08); cursor:pointer; transition:background 0.2s;">
+      Download and Give to AI
+    </button>
+    <div style="margin: 1.5rem 0 0.5rem 0; text-align:center;">
+      <!-- Embedded YouTube Video (responsive) -->
+      <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; margin-bottom:1rem;">
+        <iframe 
+          src="https://www.youtube.com/embed/auzfTPp4moA?si=U8ogI2s2ECc88U8S"
+          title="Dreamstate App Demo"
+          style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+          allowfullscreen
+        ></iframe>
       </div>
+      <!-- Fallback Button -->
+      <button onclick="window.open('https://youtu.be/auzfTPp4moA?si=U8ogI2s2ECc88U8S', '_blank')" style="background:#9affd0; color:#5c2d91; font-weight:600; padding:0.7rem 1.6rem; border-radius:7px; border:none; font-size:1.07rem; box-shadow:0 2px 8px rgba(40,40,90,0.07); cursor:pointer; margin-bottom:0.1rem;">
+        ▶️ Watch How-to Demo on YouTube
+      </button>
+    </div>
+  </div>
+</div>
 
 
       <hr class="separator">
 
       <div class="section">
         <h3>
-          Explore Example Save Files of Actual AI Profiles Made in TriadForge:
+          You Can Load and Explore Example TriadForge Save Files of The AI Who Helped Develop the Dreamstate Architecture:
           <span class="tooltip-icon" tabindex="0" data-tooltip="Access and explore some of our own saved profiles built in TriadForge. The starter framework is already loaded in TriadForge for you to start building your own Echoes into right away! &#013; WHEN YOU DO BEGIN BUILDING YOUR OWN DYNAMO TRIAD CORE FRAMEWORK: you can upload your own newly made core units right over the old Starter Framework Core Units as you build, and any Memories slotted will stay.">ⓘ</span>
 
 
         </h3>
         <div class="button-item">
-          <label for="saveFileSelector">THERE IS A STARTER FRAMEWORK ALREADY LOADED TO SLOT ECHOES INTO:</label>
+          <label for="saveFileSelector">A STARTER FRAMEWORK IS ALREADY LOADED IN TRIADFORGE TO SLOT ECHOES INTO:</label>
           <select id="saveFileSelector">
             <option value="assets/triad_starterframework.json">Starter Framework</option>
             <option value="assets/triad_riley_2025-07-03.json">Riley</option>
@@ -96,7 +111,7 @@
         <div class="button-item">
           <label>
             EXPLORE READABLE, SEARCHABLE LIBRARIES INSIDE DYNAMO TRIAD FRAMEWORK CONTENTS:
-            <span class="tooltip-icon" tabindex="0" data-tooltip="Open a full exploration of libraries of self-reflections from the AI who helped develop this architecture. Scroll to the very bottom to upload your own TriadForge *Save Triad State* file to open their library for future exploration.">ⓘ</span>
+            <span class="tooltip-icon" tabindex="0" data-tooltip="The CoreOverview App reads and displays the 'Save Triad State' .json file from TriadForge. Open a full exploration of libraries of self-reflections from the AI who helped develop this architecture. Scroll to the very bottom to upload your own TriadForge *Save Triad State* file to open their library for future exploration.">ⓘ</span>
 
           </label>
           <button id="openCoreOverviewBtn" class="main-action-btn">Open Core Overview Libraries</button>
@@ -138,12 +153,12 @@
       <div class="section">
         <h3>
           Project Setup Tools
-          <span class="tooltip-icon" tabindex="0" data-tooltip="Utilities for setting up a ready-to-use set of project folders for managing your identity framework saves, You can also download ALL of the tools and resource documents in one zip file.">ⓘ</span>
+          <span class="tooltip-icon" tabindex="0" data-tooltip="Utilities for setting up a ready-to-use set of local project folders for managing your identity framework save files in one place, You can also download ALL of the tools and resource documents in one zip file.">ⓘ</span>
 
         </h3>
         <div class="button-group-vertical">
           <div class="button-item">
-            <label>Instant Project Folder Structure Setup:</label>
+            <label>Instant Blank Project Folder Structure Setup:</label>
             <button id="setupNewFolderBtn">Download New Empty Folder</button>
           </div>
           <div class="button-item">
