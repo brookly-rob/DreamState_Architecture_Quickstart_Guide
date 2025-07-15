@@ -483,6 +483,8 @@
     
     /* CoreOverview Welcome Modal Overlay */
     .co-welcome-modal {
+      align-items: flex-start !important; /* Start at the top */
+      overflow-y: auto !important;        /* Allow scrolling if needed */
       position: fixed;
       left: 0; top: 0;
       width: 100vw; height: 100vh;
@@ -531,6 +533,8 @@
     
     /* Modal Content Card */
     .co-welcome-card {
+      max-height: 92vh;
+      overflow-y: auto;
       position: relative;
       background: #fff;
       color: #23233b;
@@ -600,6 +604,9 @@
     
     @media (max-width: 700px) {
       .co-welcome-card {
+    padding-top: 1.5rem;
+    padding-bottom: 1.1rem;
+    max-height: 90vh;
     padding: 1.3rem 0.8rem 1rem 0.8rem;
     border-radius: 16px;
     max-width: 98vw;
@@ -610,6 +617,8 @@
       .co-welcome-glow::before {
     border-radius: 18px;
       }
+      .co-welcome-modal {
+    padding: 2.5vw 0;
     }
     
     
