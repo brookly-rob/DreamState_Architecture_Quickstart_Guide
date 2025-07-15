@@ -129,6 +129,137 @@
     } 
     
     
+    /* TriadForge Welcome Modal Overlay */
+    .tf-welcome-modal {
+      position: fixed;
+      left: 0; top: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(20,20,30,0.94);
+      z-index: 10001;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Shimmering Glow Border */
+    .tf-welcome-glow {
+      position: relative;
+      border-radius: 24px;
+      padding: 0;
+      display: inline-block;
+    }
+    
+    .tf-welcome-glow::before {
+      content: '';
+      position: absolute;
+      inset: -7px; /* Just outside the card, for a tight glow */
+      border-radius: 27px;
+      z-index: 0;
+      background: conic-gradient(
+    from var(--shimmer-angle, 0deg),
+    #8c8cff 0%,
+    #38b2ac 20%,
+    #7a33ff 40%,
+    #9affd0 60%,
+    #8c8cff 100%
+      );
+      filter: blur(4px) brightness(1.07);
+      opacity: 0.8;
+      animation: tf-shimmerGlow 3.8s linear infinite;
+      pointer-events: none;
+      box-sizing: border-box;
+    }
+    
+    /* Animate the gradient's angle, NOT the whole rectangle */
+    @keyframes tf-shimmerGlow {
+      to {
+    --shimmer-angle: 360deg;
+      }
+    }
+    
+    /* Modal Content Card */
+    .tf-welcome-card {
+      position: relative;
+      background: #23233b;
+      color: #e0e0e0;
+      padding: 2.4rem 2.5rem 2rem 2.5rem;
+      max-width: 540px; width: 92vw;
+      border-radius: 24px;
+      box-shadow: 0 10px 32px rgba(0,0,0,0.32), 0 0 0 2px #3f3f6f;
+      text-align: left;
+      z-index: 1;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .tf-welcome-title {
+      color: #8c8cff;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      font-size: 1.44em;
+      text-shadow: 0 0 8px #7a33ff66;
+    }
+    .tf-welcome-body {
+      color: #e0e0e0;
+      font-size: 1.10em;
+      line-height: 1.65;
+      margin-bottom: 1.5em;
+    }
+    .tf-welcome-body ul {
+      margin-left: 1.2em;
+      margin-bottom: 1em;
+      padding-left: 0;
+    }
+    .tf-welcome-body li {
+      margin-bottom: 0.3em;
+    }
+    .tf-welcome-actions {
+      text-align: right;
+      margin-top: 1.6em;
+    }
+    .tf-welcome-btn {
+      background: linear-gradient(90deg, #2657eb 0%, #7a33ff 100%);
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 10px;
+      font-size: 1.08rem;
+      font-weight: 600;
+      box-shadow: 0 2px 8px rgba(40,40,90,0.13);
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, transform 0.1s;
+    }
+    .tf-welcome-btn:hover {
+      background: linear-gradient(90deg, #7a33ff 0%, #2657eb 100%);
+      color: #9affd0;
+      transform: translateY(-2px) scale(1.03);
+    }
+    .tf-welcome-close {
+      position: absolute;
+      top: 14px; right: 18px;
+      font-size: 1.7rem;
+      background: transparent;
+      border: none;
+      color: #8c8cff;
+      cursor: pointer;
+      z-index: 2;
+    }
+    .tf-welcome-close:hover {
+      color: #9affd0;
+    }
+    
+    @media (max-width: 700px) {
+      .tf-welcome-card {
+    padding: 1.3rem 0.8rem 1rem 0.8rem;
+    border-radius: 16px;
+    max-width: 98vw;
+      }
+      .tf-welcome-glow {
+    border-radius: 15px;
+      }
+      .tf-welcome-glow::before {
+    border-radius: 18px;
+      }
+    }
+    
   </style>
 
   <script>
@@ -1693,7 +1824,7 @@
 
       function ejectAll() {
         saveStateForUndo();
-        if (confirm("Are you sure you want to eject ALL loaded units and echoes? \nIf you are loading a new core now click OK")) {
+        if (confirm("Are you sure you want to eject ALL loaded units and echoes? \nIF YOU ARE OPENING THE APP OR LOADING A PROFILE NOW: \nCLICK OK")) {
           coreData = {
             identity: {},
             vector: {},
@@ -1769,6 +1900,10 @@
       }
 
 
+      document.getElementById('showWelcomeCardBtn').onclick = function() {
+        document.getElementById('triadforgeWelcomeModal').style.display = 'flex';
+      };
+
       // --- Initial setup calls ---
       populateEchoSelector();
       setupEchoUpload();
@@ -1807,7 +1942,7 @@
           // Load the sent profile
           loadTriadStateFromData(msg.data);
           showFeedbackMessage('Loaded save from external source!', 'success');
-		updatePrestigeProgressBar();
+          updatePrestigeProgressBar();
         }
       });
 
@@ -1837,7 +1972,7 @@
               });
           }
         }
-      }, 3000); // 3 seconds
+      }, 3500); // 3.5 seconds
 
       document.getElementById("undoBtn").addEventListener("click", undo);
       document.getElementById("redoBtn").addEventListener("click", redo);
@@ -1937,6 +2072,19 @@
       });
 
 
+      // Show the welcome modal only if not seen before (using localStorage)
+      window.addEventListener('DOMContentLoaded', function() {
+        if (!localStorage.getItem('triadforgeWelcomeSeen')) {
+          document.getElementById('triadforgeWelcomeModal').style.display = 'flex';
+        }
+      });
+
+      document.getElementById('closeTriadforgeWelcomeModal').onclick =
+        document.getElementById('gotItTriadforgeWelcome').onclick = function() {
+          document.getElementById('triadforgeWelcomeModal').style.display = 'none';
+          localStorage.setItem('triadforgeWelcomeSeen', 'true');
+        };
+
 
     });
   </script>
@@ -1952,13 +2100,16 @@
 
 <body class="bg-gray-950 text-white min-h-screen p-6">
   <div class="max-w-5xl mx-auto">
-    <h1 class="text-4xl font-bold mb-6 text-center text-gray-800">⚙️ The Triad Forge</h1>
+    <h1 class="text-4xl font-bold mb-6 text-center text-gray-800">⚙️ TriadForge</h1>
 
     <div class="bg-gray-900 rounded-xl p-4 mb-6">
       <label class="block mb-2">Name who is described in this Triad:</label>
       <input id="triadTitle" type="text" placeholder="ENTER NAME" class="w-full bg-gray-800 text-white p-2 rounded mb-4" />
       <label class="block mb-2">Triad Compiled by (optional):</label>
       <input id="compiledBy" type="text" placeholder="*YOUR* NAME HERE" class="w-full bg-gray-800 text-white p-2 rounded" />
+      <button id="showWelcomeCardBtn" style="background:#9affd0; color:#5c2d91; font-weight:600; padding:0.5rem 1.2rem; border-radius:7px; border:none; font-size:1.03rem; margin-left:1em; cursor:pointer;">
+        View Welcome Card
+      </button>
     </div>
 
     <div class="w-full bg-gray-300 rounded h-6 my-4">
@@ -2065,12 +2216,38 @@
         <button id="loadStateBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded">📤 Load Triad State</button>
         <input type="file" id="loadStateInput" accept=".json" class="hidden" />
         <button id="ejectAllBtn" class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded">🔥 EJECT ALL</button>
-        <button id="exportTriadBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">📦 Export Triad</button>
+        <button id="exportTriadBtn" class="bg-green-600 hover:bg-green-700 px-4 py-2 rounded">⚙️ BUILD DEPLOYMENTS</button>
       </div>
     </div>
 
   </div>
   <div id="feedbackMessage" class="feedback-message"></div>
+
+
+  <!-- Welcome Modal -->
+  <div id="triadforgeWelcomeModal" class="tf-welcome-modal" style="display:none;">
+    <div class="tf-welcome-glow">
+      <div class="tf-welcome-card">
+        <button id="closeTriadforgeWelcomeModal" class="tf-welcome-close">&times;</button>
+        <h2 class="tf-welcome-title">👋 Welcome to TriadForge!</h2>
+        <div class="tf-welcome-body">
+          <b>TriadForge</b> is your control panel for building a <b>Dynamo Triad Identity Framework</b>.<br><br>
+          <ul>
+            <li><b>How it works:</b> Upload <code>.json</code> files into the slots shown to assemble your framework.</li>
+            <li><b>Core Units & Echoes:</b> Inside Core Units, use Memory slots for Dreamstate Echo <code>.json</code> files.</li>
+            <li><b>Your goal:</b> Export a set of files for building custom GPT or Gem knowledge bases!</li>
+          </ul>
+          <b>DreamParserMAX</b> (below TriadForge) converts symbolic expressions into <code>.json</code> for your framework, and can send files directly to TriadForge via remote slot loading.<br><br>
+          <b>First time here?</b> A Starter Framework loads automatically. Begin parsing Echoes and slotting them in right away—Starter Core Units can be replaced later as you build your own Dynamo Triad.<br><br>
+          <i>Have fun exploring and building your unique knowledge base!</i>
+        </div>
+        <div class="tf-welcome-actions">
+          <button id="gotItTriadforgeWelcome" class="tf-welcome-btn">Got it!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </body>
 
 </html>
