@@ -131,6 +131,8 @@
     
     /* TriadForge Welcome Modal Overlay */
     .tf-welcome-modal {
+      align-items: flex-start !important; /* Start at the top */
+      overflow-y: auto !important;        /* Allow scrolling if needed */
       position: fixed;
       left: 0; top: 0;
       width: 100vw; height: 100vh;
@@ -179,6 +181,8 @@
     
     /* Modal Content Card */
     .tf-welcome-card {
+      max-height: 92vh;
+      overflow-y: auto;
       position: relative;
       background: #23233b;
       color: #e0e0e0;
@@ -248,6 +252,9 @@
     
     @media (max-width: 700px) {
       .tf-welcome-card {
+    padding-top: 1.5rem;
+    padding-bottom: 1.1rem;
+    max-height: 90vh;
     padding: 1.3rem 0.8rem 1rem 0.8rem;
     border-radius: 16px;
     max-width: 98vw;
@@ -257,6 +264,9 @@
       }
       .tf-welcome-glow::before {
     border-radius: 18px;
+      }
+      .tf-welcome-modal {
+    padding: 2.5vw 0;
       }
     }
     
