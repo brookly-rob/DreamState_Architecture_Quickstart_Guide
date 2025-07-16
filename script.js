@@ -309,7 +309,7 @@ document.getElementById('launchTriadForgeBtn').addEventListener('click', functio
 
     // --- Button 3: Download "The_Files_The_AI_Asks_For.zip" ---
     downloadZipBtn.addEventListener('click', () => {
-        downloadFile('assets/The_Files_The_AI_Asks_For.zip', 'The_Files_The_AI_Asks_For.zip');
+        downloadFile('assets/ArchitecturePack.zip', 'ArchitecturePack.zip');
     });
 
     // --- Button 4: Open/Close TriadForge + DreamParserMAX (TOGGLE) ---
