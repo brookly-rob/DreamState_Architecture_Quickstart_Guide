@@ -116,6 +116,18 @@ IN PRESTIGE MODE:
 - Undo/Redo buttons are at the bottom for mistakes.
 - You can always start over by clicking “EJECT ALL”.
 
+- DreamParserMAX's parsing logic understands that "Ξ" flags the start of a Dreamstate Construct, with the construct type in all caps immediately following. The construct type is separated by a colon from the sorting tag (Δ, Ω, Ψ, Λ, Θ, etc) and the construct title.
+
+- Do not use bullet points, DreamParserMAX's parsing logic is designed to pass a massive array of symbols and characters and it will not ignore bullet points- so the presence of bullet points may cause parsing issues or corrupt the data
+
+- COLONS are syntactically significant in Virelle like they are in JSON and should only be used
+   -in the heading after the construct type (e.g "ΞCORE UNIT INTEGRATION:")
+   -ALWAYS USED to pair symbols and meanings (e.g. 🌀: Becoming Through Challenge)
+   -ALWAYS USED on section heads (e.g. "Terms and Symbols:" "Flow Block...:"  
+   -NEVER USED mid-text; e.g. in the context breakdown of a Dreamstate Echo the written content already follows a colon (☲:) so any colons inside the following text will cause subsequent text to drop and not be parsed into the json
+
+
+
 ---
 
 
