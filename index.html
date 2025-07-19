@@ -56,12 +56,14 @@
         </label>
         <button id="openAppBtn" class="main-action-btn">Open TriadForge + DreamParserMAX</button>
       </div>
-      <div id="embeddedAppContainer" class="hidden app-frame-container" style="position:relative;">
-        <button class="iframe-close-btn" onclick="closeEmbeddedApp()">Close</button>
-        <button id="viewOverviewBtn" class="iframe-overview-btn" style="margin-left: 8px;">View in Overview Library</button>
-        <iframe id="embeddedAppFrame" src="" frameborder="0"></iframe>
-        <button id="downloadManualBtn" class="main-action-btn">TriadForge/Dreamparser User Overview</button>
-      </div>
+<div id="embeddedAppContainer" class="hidden app-frame-container" style="display: flex; flex-direction: column; height: 550px; position: relative;">
+  <div style="display: flex; gap: 8px; margin-bottom: 1rem;">
+    <button class="iframe-close-btn" onclick="closeEmbeddedApp()">Close</button>
+    <button id="viewOverviewBtn" class="iframe-overview-btn">View in Overview Library</button>
+  </div>
+  <iframe id="embeddedAppFrame" src="" frameborder="0" style="flex: 1 1 auto; width: 100%;"></iframe>
+  <button id="downloadManualBtn" class="main-action-btn" style="margin-top: 1rem;">TriadForge/Dreamparser User Overview</button>
+</div>
 
 <!-- Modal Structure -->
 <div id="manualModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(20,20,30,0.88); z-index:9999; align-items:center; justify-content:center;">
