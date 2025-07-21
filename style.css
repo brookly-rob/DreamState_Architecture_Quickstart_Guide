@@ -757,11 +757,18 @@ h3 {
 
 @media (max-width: 700px) {
   #gumroadModal > div {
-    padding: 0.7rem 0.2rem;
-    max-width: 98vw;
+    max-width: 100vw !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
   }
   #gumroadIframe {
-    height: 72vh !important;
-    min-height: 240px !important;
+    width: 100vw !important;
+    height: 78vh !important;  /* Adjust as needed for your button row */
+    min-height: 340px !important;
+    border-radius: 0 !important;
+    margin-bottom: 0 !important;
   }
 }
