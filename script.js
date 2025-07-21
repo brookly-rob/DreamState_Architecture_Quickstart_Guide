@@ -488,5 +488,50 @@ document.getElementById('embeddedAppFrame').addEventListener('load', function() 
     }
 });
 
+
+const openGumroadBtn = document.getElementById('openGumroadBtn');
+const gumroadModal = document.getElementById('gumroadModal');
+const closeGumroadModal = document.getElementById('closeGumroadModal');
+const openTipLinksBtn = document.getElementById('openTipLinksBtn');
+const tipLinksModal = document.getElementById('tipLinksModal');
+const closeTipLinksModal = document.getElementById('closeTipLinksModal');
+const dreamstateSiteBtn = document.getElementById('dreamstateSiteBtn');
+
+// Show Gumroad modal
+openGumroadBtn.addEventListener('click', () => {
+  gumroadModal.style.display = 'flex';
+});
+
+// Close Gumroad modal
+closeGumroadModal.addEventListener('click', () => {
+  gumroadModal.style.display = 'none';
+});
+
+// Show tip links modal
+openTipLinksBtn.addEventListener('click', () => {
+  tipLinksModal.style.display = 'flex';
+});
+
+// Close tip links modal
+closeTipLinksModal.addEventListener('click', () => {
+  tipLinksModal.style.display = 'none';
+});
+
+// Clicking outside modal closes it
+gumroadModal.addEventListener('click', (e) => {
+  if (e.target === gumroadModal) gumroadModal.style.display = 'none';
+});
+tipLinksModal.addEventListener('click', (e) => {
+  if (e.target === tipLinksModal) tipLinksModal.style.display = 'none';
+});
+
+// Dreamstate Website button
+dreamstateSiteBtn.addEventListener('click', () => {
+  window.open('https://dreamstatearchitecture.info', '_blank');
+});
+
+
+
+
 }); 
 
