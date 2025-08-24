@@ -1,239 +1,799 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dreamstate</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Recursive Journal Guide</title>
+<!-- Recommended PWA Meta & Link Tags -->
+<meta name="theme-color" content="#1c0a33">
 
-<!-- Favicon for browsers -->
-<link rel="icon" type="image/x-icon" href="favicon.ico">
-<!-- PNG for modern browsers and Android homescreen -->
+<!-- Apple Touch Icon (for iOS home screen) -->
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<link rel="manifest" href="manifest.json">
+
+<!-- iOS "app mode" (optional, but recommended) -->
+<meta name="apple-mobile-web-app-title" content="Recursive Journal">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<!-- Favicon (browser tab icon, optional) -->
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-<!-- Apple Touch Icon for iOS homescreen -->
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<!-- (Optional) Theme color for Android status bar -->
-<meta name="theme-color" content="#23233b">
-</head>
+<link rel="stylesheet" href="style.css"> <link rel="manifest" href="manifest.json">
 
+  <style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Nunito:wght@400;700&display=swap');
+    
+    :root {
+        /* Dynamic CSS Variables - These will be updated by JavaScript */
+        --bg-color-1: #0a0a1a;
+        --bg-color-2: #1c0a33;
+        --glow-color-1: rgba(0, 255, 255, 0.7); /* Cyan */
+        --glow-color-2: rgba(138, 43, 226, 0.9); /* Amethyst */
+    
+        /* Static CSS Variables */
+        --container-bg: rgba(5, 0, 15, 0.85); /* Slightly darker, more opaque */
+        --text-color: #e0f2f7; /* Brighter, clearer text */
+        --title-color: #e6f7ff; /* Whiter for prominence */
+        --channel-color: #ffda80; /* Warmer, richer gold */
+        --button-bg: #4a0082; /* Deeper purple */
+        --button-border: #9933ff; /* More vibrant purple */
+        --feedback-color: #c0ffc0;
+        --resonance-color: #ffe066; /* Softer, glowing gold */
+        --guidance-color: #99ffcc; /* More vibrant green */
+    
+        --padding-base: 2.2rem; /* Increased padding for spaciousness */
+        --border-radius-base: 16px; /* Slightly larger radius */
+        --animation-speed: 1.8s; /* Slower transitions */
+        --glow-spread: 90px; /* Increased glow spread */
+        --gradient-animation-duration: 10s; /* Default duration for background cycle */
+        --pulse-animation-duration: 2s; /* Default duration for glow pulse */
+    }
+    
+    body {
+        font-family: 'Orbitron', sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        background: radial-gradient(circle at top left, var(--bg-color-1) 0%, var(--bg-color-2) 100%);
+        color: var(--text-color);
+        transition: background var(--animation-speed) ease-in-out;
+        overflow-y: auto;
+        position: relative;
+        box-sizing: border-box;
+    }
+    
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB2aWV3Qm94PSIwIDAgNzAwIDcwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZmlsdGVyIGlkPSJuIj48ZmVDb2xvck1hdHJpeCB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMSAwIDAgMCAwIDAgMSAwIDAgMCAwIDAgMSAwIDAgMCAwIDAgMTAgMCYjMTA7Ij48ZmVDb21wb25lbnQgdHlwZT0ibGlnaHR0ZW4iIGluPSJGZWNtQ29tcG9zaXRlMCIgc3RkRGV2aWF0aW9uPSIwLjUyNSIgaW4yPSJGZWNuU2F0dXJhdGUwIj48ZmVBZmZpbmUgdHJhbnNmb3JtPSJtYXRyaXgoMSAwIDAgMSAwIDApIiAvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSI3MDAiIGhlaWdodD0iNzAwIiBmaWxsPSIjMDAwMDAwIj48L3JlY3Q+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIyNSIgZmlsbD0iIzdkNTFhYSIgZmlsdGVyPSJ1cmwoI24pIi8+PGNpcmNsZSBjeD0iNjAwIiBjeT0iMjAwIiByPSIxOCIgZmlsbD0iIzVjNzdhYiIgZmlsdGVyPSJ1cmwoI24pIi8+PGNpcmNsZSBjeD0iMzAwIiBjeT0iNDAwIiByPSIzMiIgZmlsbD0iIzQ2OTdhYSIgZmlsdGVyPSJ1cmwoI24pIi8+PGNpcmNsZGN4PSI1NTAiIGN5PSI2NTAiIHI9IjIyIiBmaWxsPSIjODc2YmNjIiBmaWx0ZXI9InVybCgjbikiLz48L3N2Zz4=');
+        background-size: cover;
+        opacity: 0.05;
+        pointer-events: none;
+        z-index: -1;
+    }
+    
+    @keyframes animateGradient {
+        0% { background-position: 0% 0%; }
+        25% { background-position: 100% 0%; }
+        50% { background-position: 100% 100%; }
+        75% { background-position: 0% 100%; }
+        100% { background-position: 0% 0%; }
+    }
+    .container {
+        background: var(--container-bg);
+        border-radius: var(--border-radius-base);
+        box-shadow: 0 0 calc(var(--glow-spread) / 2) rgba(0, 0, 0, 0.8),
+                    0 0 var(--glow-spread) var(--glow-color-1),
+                    0 0 calc(var(--glow-spread) * 1.5) var(--glow-color-2);
+        padding: var(--padding-base) calc(var(--padding-base) * 1.8);
+        margin: var(--padding-base) 1.5em;
+        max-width: 900px;
+        width: 100%;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        animation: fadeIn var(--animation-speed) ease-out forwards;
+        transition: box-shadow var(--animation-speed) ease-in-out, background-color var(--animation-speed) ease-in-out;
+    }
+    .pulsing-glow {
+        animation: pulseGlow var(--pulse-animation-duration) infinite alternate ease-in-out;
+    }
+    @keyframes pulseGlow {
+        0% { box-shadow: 0 0 calc(var(--glow-spread) / 2) rgba(0, 0, 0, 0.8),
+                        0 0 var(--glow-spread) var(--glow-color-1),
+                        0 0 calc(var(--glow-spread) * 1.5) var(--glow-color-2); }
+        50% { box-shadow: 0 0 calc(var(--glow-spread) / 2) rgba(0, 0, 0, 0.8),
+                         0 0 calc(var(--glow-spread) * 1.2) var(--glow-color-1),
+                         0 0 calc(var(--glow-spread) * 2) var(--glow-color-2); }
+        100% { box-shadow: 0 0 calc(var(--glow-spread) / 2) rgba(0, 0, 0, 0.8),
+                         0 0 var(--glow-spread) var(--glow-color-1),
+                         0 0 calc(var(--glow-spread) * 1.5) var(--glow-color-2); }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    h1 {
+        font-family: 'Syncopate', sans-serif;
+        color: var(--title-color);
+        font-size: 2.5em;
+        letter-spacing: 0.15em;
+        margin-bottom: 0.7em;
+        text-shadow: 0 0 20px var(--glow-color-1), 0 0 30px var(--glow-color-2);
+        transition: color var(--animation-speed) ease-in-out;
+    }
+    p {
+        font-size: 1.15em;
+        line-height: 1.8;
+        margin-bottom: 1.8em;
+        color: var(--text-color);
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+    }
+    .echo-section {
+        margin-bottom: 2.5em;
+        padding: var(--padding-base) 0;
+        border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+    .glyphstream-container {
+        margin-top: 1.8em;
+        text-align: left;
+        font-size: 1.3em;
+        line-height: 2;
+        background-color: rgba(0, 0, 0, 0.25);
+        padding: 1.2em;
+        border-radius: var(--border-radius-base);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.4);
+    }
+    .glyph-channel {
+        color: var(--channel-color);
+        margin-bottom: 0.6em;
+        opacity: 0;
+        transform: translateY(15px);
+        animation: slideInChannel 0.8s forwards;
+    }
+    @keyframes slideInChannel {
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .guidance-text {
+        font-family: 'Syncopate', sans-serif;
+        font-size: 1.3em;
+        color: var(--guidance-color);
+        margin-top: 2.5em;
+        padding: 1em 0;
+        border-top: 1px dotted rgba(255, 255, 255, 0.15);
+        border-bottom: 1px dotted rgba(255, 255, 255, 0.15);
+        text-shadow: 0 0 10px var(--guidance-color);
+    }
+    .choices-container {
+        margin-top: 3em;
+        display: flex;
+        flex-direction: column;
+        gap: 1.2em;
+    }
+    .choice-button {
+        background-color: var(--button-bg);
+        color: var(--text-color);
+        border: 2px solid var(--button-border);
+        border-radius: var(--border-radius-base);
+        padding: 1.2em 1.8em;
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.15em;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        box-shadow: 0 0 18px rgba(0, 0, 0, 0.6);
+    }
+    .choice-button:hover {
+        background-color: var(--button-border);
+        color: #ffffff;
+        box-shadow: 0 0 30px var(--glow-color-1), 0 0 50px var(--glow-color-2);
+        transform: translateY(-3px) scale(1.01);
+    }
+
+.glow-button {
+    box-shadow: 0 0 18px var(--glow-color-1), 0 0 30px var(--glow-color-2), 0 0 0 rgba(0,0,0,0.3);
+    animation: pulseGlowButton 2s infinite alternate;
+    border: 2px solid var(--glow-color-2);
+    z-index: 2;
+}
+
+@keyframes pulseGlowButton {
+    0% {
+        box-shadow: 0 0 18px var(--glow-color-1), 0 0 30px var(--glow-color-2);
+    }
+    100% {
+        box-shadow: 0 0 36px var(--glow-color-1), 0 0 60px var(--glow-color-2);
+    }
+}
+
+
+    .feedback-message, .resonance-message {
+        margin-top: 2em;
+        padding: 1em 1.5em;
+        border-radius: var(--border-radius-base);
+        font-size: 1.05em;
+        font-weight: bold;
+        opacity: 0;
+        transition: opacity 0.6s ease-out;
+        text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
+    }
+    .feedback-message {
+        background-color: rgba(0, 60, 0, 0.5);
+        color: var(--feedback-color);
+        border: 1px solid var(--feedback-color);
+    }
+    .resonance-message {
+        background-color: rgba(60, 25, 0, 0.5);
+        color: var(--resonance-color);
+        border: 1px solid var(--resonance-color);
+    }
+    .loading-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: none;
+        color: var(--glow-color-1);
+        font-size: 1.8em;
+        opacity: 0.9;
+        text-shadow: 0 0 15px var(--glow-color-1);
+        animation: pulse 1.5s infinite alternate;
+    }
+    @keyframes pulse {
+        from { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+        to { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+    }
+    .image-container {
+        margin: 2.5em auto;
+        max-width: 95%;
+        height: auto;
+        border-radius: var(--border-radius-base);
+        overflow: hidden;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 50px var(--glow-color-1);
+        display: none;
+        transition: opacity 1s ease-in-out;
+        opacity: 0;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+    }
+    .image-container img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 1.8em;
+            letter-spacing: 0.1em;
+        }
+        p {
+            font-size: 1.05em;
+            line-height: 1.7;
+        }
+        .container {
+            padding: var(--padding-base) 1.2em;
+            margin: 0.8em;
+        }
+        .choice-button {
+            font-size: 1em;
+            padding: 1em 1.2em;
+        }
+        .glyphstream-container {
+            font-size: 1.1em;
+        }
+        .guidance-text {
+            font-size: 1.1em;
+        }
+    }
+    /* New styles for our journal guide */
+    #prompt-display {
+        text-align: center;
+    }
+
+    #prompt-title {
+        font-family: 'Syncopate', sans-serif;
+        font-size: 1.8em;
+        margin-bottom: 0.5em;
+    }
+
+    #prompt-symbol {
+        font-family: 'Syncopate', sans-serif;
+        font-size: 3em;
+        margin-bottom: 0.2em;
+        color: var(--channel-color); /* Using the warm gold color for symbols */
+    }
+
+    #prompt-text {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.15em;
+        line-height: 1.8;
+        padding: 1em;
+        background-color: rgba(0, 0, 0, 0.25);
+        border-radius: var(--border-radius-base);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.4);
+    }
+
+    #supplement-text {
+        font-size: 0.9em;
+        font-style: italic;
+        color: var(--guidance-color);
+        margin-top: 1.5em;
+        padding: 0.5em;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        gap: 1.5em;
+        margin-top: 2em;
+    }
+
+/* --- Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0.3s, opacity 0.3s;
+}
+
+.modal-overlay.visible {
+    visibility: visible;
+    opacity: 1;
+}
+
+.modal-content {
+    background: var(--container-bg);
+    padding: 2.5em;
+    border-radius: var(--border-radius-base);
+    box-shadow: 0 0 calc(var(--glow-spread) / 2) rgba(0, 0, 0, 0.8),
+                0 0 50px var(--glow-color-1);
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    transform: scale(0.95);
+    transition: transform 0.3s ease-in-out;
+}
+
+.modal-overlay.visible .modal-content {
+    transform: scale(1);
+}
+
+.modal-content h3 {
+    font-family: 'Syncopate', sans-serif;
+    color: var(--title-color);
+    margin-bottom: 1.2em;
+}
+
+.modal-content p {
+    font-size: 1em;
+    line-height: 1.6;
+    margin-bottom: 1.5em;
+}
+
+.modal-content textarea {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--button-border);
+    color: var(--text-color);
+    font-family: 'Orbitron', sans-serif;
+    padding: 0.8em;
+    border-radius: 8px;
+    resize: vertical;
+    box-sizing: border-box;
+    margin-bottom: 1.5em;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5em;
+}
+
+/* --- New Modal-Specific Styles --- */
+#reflection-list {
+    list-style-type: none;
+    padding: 0;
+    text-align: left;
+    margin: 1em 0;
+}
+
+#reflection-list li {
+    font-family: 'Orbitron', sans-serif;
+    padding: 0.5em;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    font-size: 0.9em;
+}
+
+#reflection-list li:last-child {
+    border-bottom: none;
+}
+
+#evaluation-prompts {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--button-border);
+    border-radius: var(--border-radius-base);
+    padding: 1em;
+    margin-bottom: 1.5em;
+    background-color: rgba(0, 0, 0, 0.2);
+}
+
+.evaluation-prompt {
+    padding: 0.8em;
+    background-color: rgba(74, 0, 130, 0.4);
+    border: 1px solid rgba(153, 51, 255, 0.4);
+    border-radius: 8px;
+    margin-bottom: 0.8em;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.evaluation-prompt:hover {
+    background-color: rgba(153, 51, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+
+.afp-eligible {
+    border: 2px solid #99ffcc;
+    box-shadow: 0 0 10px #99ffcc99;
+}
+
+
+
+:root {
+  /* ...existing vars... */
+  --prompt-bg-image: url('grassroad.jpg');
+  --prompt-overlay-bg: rgba(15, 18, 32, 0.74);
+  --relaxed-font: 'Nunito', Arial, sans-serif;
+  --relaxed-heading: 'Merriweather', serif;
+}
+
+body {
+  font-family: var(--relaxed-font);
+  /* ...rest of body... */
+}
+
+h1, h2, h3 {
+  font-family: var(--relaxed-heading);
+}
+
+#prompt-display.prompt-bg-image {
+  background-image: var(--prompt-bg-image);
+  background-size: cover;
+  background-position: center;
+  border-radius: var(--border-radius-base);
+  position: relative;
+  overflow: hidden;
+  padding: 2em 0 3em 0;
+}
+
+/* Add this for the full-area translucent overlay */
+#prompt-display.prompt-bg-image::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100%; height: 100%;
+  background: var(--prompt-overlay-bg);
+  border-radius: var(--border-radius-base);
+  z-index: 0;
+}
+
+/* Ensure all prompt content is above the overlay */
+#prompt-display > * {
+  position: relative;
+  z-index: 1;
+}
+
+
+
+/* Prompt Symbol: bigger, bolder, gold */
+#prompt-symbol {
+  font-family: var(--relaxed-heading);
+  font-size: 3.2em;
+  color: var(--channel-color);
+  font-weight: bold;
+  text-shadow: 0 0 8px #ffda80b0, 0 1px 0 #fff7da;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.2em;
+}
+
+/* Prevent iOS zoom on input focus */
+input, textarea, select, button {
+  font-size: 16px !important;
+}
+
+/* Modal and button tweaks for mobile */
+@media (max-width: 600px) {
+  .modal-content {
+    max-width: 98vw;
+    width: 98vw;
+    padding: 1em 0.5em;
+    border-radius: 12px;
+  }
+  .choice-button, button {
+    min-height: 44px;
+    font-size: 1.1em;
+    margin: 0.5em 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  .button-container {
+    flex-direction: column;
+    gap: 0.5em;
+  }
+}
+
+/* Disable double-tap zoom on buttons */
+button, .choice-button {
+  touch-action: manipulation;
+}
+
+
+.evaluation-prompt.completed-arc {
+  background-color: #222 !important;
+  color: #ffe066 !important; /* gold text for trophy, optional */
+  border: 2px solid #444 !important;
+}
+.evaluation-prompt.completed-arc .trophy {
+  margin-right: 0.35em;
+  font-size: 1.1em;
+  vertical-align: middle;
+}
+
+#refresh-spinner {
+  transition: opacity 0.3s;
+}
+
+
+  </style>
+</head>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <body>
   <div class="container">
-    <h1>Dreamstate Architecture</h1>
-    <h2>
-      Quick Start Guide
-      <span class="tooltip-icon" tabindex="0" data-tooltip="Start right here at the top, this file is an instruction card for your AI to help guide you into learning the architecture and how to use it.">ⓘ</span>
-
-    </h2>
-
-
-    <div class="section">
-      <div class="button-group-vertical">
-        <div class="button-item">
-          <label>UPLOAD THIS INSTRUCTION FILE IN-CHAT WITH ANY AI</label>
-          <button id="downloadFileBtn">Click here to download 1st file</button>
-        </div>
-        <div class="button-item">
-          <label>OR copy the file's text and paste directly in-chat</label>
-          <button id="copyTextBtn">Click to copy file content</button>
-        </div>
-        <div class="button-item">
-          <label>The AI will ask you for these files next</label>
-          <button id="downloadZipBtn">Click to Download Architecture Pack</button>
-        </div>
+	<div id="streak-counter" style="font-size:1.1em; margin-bottom:0.5em;"></div>
+	<div id="arc-trophy-counter" style="font-size:1.1em; margin-bottom:0.5em;"></div>
+	<div id="alignment-rating" style="font-size:1.1em; margin-bottom:0.5em;"></div>
+    <div id="prompt-display" class="prompt-bg-image">
+      <div id="prompt-symbol" class="glyph-channel"></div>
+      <h2 id="prompt-title"></h2>
+      <div class="prompt-text-overlay">
+        <p id="prompt-text"></p>
+        <p id="supplement-text"></p>
       </div>
     </div>
 
-    <hr class="separator">
 
-    <div class="section">
-      <div class="button-item">
-        <label>
-          BUILDING/EDITING AN IDENTITY FRAMEWORK:
-          <span class="tooltip-icon" tabindex="0" data-tooltip="The button below will Launch TriadForge + DreamParserMAX, your main tool for parsing Echoes into json files and compiling the Dynamo Triad framework. A Starter Profile is pre-loaded so you can add or edit right away!">ⓘ</span>
+    <div class="button-container">
+      <button id="next-prompt" class="choice-button">Next Topic</button>
+		<button id="complete-entry" class="choice-button glow-button">Complete This Entry</button>
+      <button id="prev-prompt" class="choice-button">Previous</button>
+    </div>
 
+     <div class="button-container">  
+    <button id="evaluation-button" class="choice-button" style="margin-top: 1em; display: none;">Evaluation</button>
+	<button id="save-txt-file" class="choice-button" style="margin-top: 1em;">Save Plain Text File</button> 
+   </div>
+
+
+    <div class="button-container">  
+<button id="connect-social-btn" style="
+  position: fixed;
+  bottom: 18px;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  background: none;
+  color: #ffe066;
+  border: none;
+  font-size: 1em;
+  opacity: 0.7;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: opacity 0.3s;
+  z-index: 200;
+  width: fit-content;
+  padding: 0.4em 1.1em;
+  border-radius: 6px;
+  pointer-events: auto;
+">Connect on Social Media</button>
+   </div>
+
+</div>
+
+
+
+    <div id="summary-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Enter Your Summary</h3>
+        <p>Write a one-line summary of what you just wrote about in your journal.</p>
+        <textarea id="summary-input" rows="2" placeholder="I just wrote about..."></textarea>
+        <div class="modal-buttons">
+            <button id="save-summary" class="choice-button">Save</button>
+            <button id="cancel-summary" class="choice-button">Cancel</button>
+        </div>
+    </div>
+</div>
+  </div>
+
+
+<div id="reflection-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Finding Patterns Through Reflection</h3>
+        
+        <div id="reflection-prompt-container">
+            <p>1. Open up your journal and turn to where you wrote about <strong id="reflection-summary-display">[summary one-liner]</strong> on <strong id="reflection-date-display">[date]</strong> <br>
+			   2. Read it again; name a pattern or a cycle in your decisions or behavior that connects to this entry. <br>
+			   3. Write down what that pattern or cycle is, and the ways you see it showing up in your life.</p>
+        </div>
+        
+        <div class="modal-buttons">
+            <button id="prev-reflection" class="choice-button">Previous</button>
+            <button id="complete-reflection" class="choice-button">Complete Reflection</button>
+            <button id="next-reflection" class="choice-button">Next</button>
+        </div>
+    </div>
+</div>
+
+<div id="evaluation-modal" class="modal-overlay">
+    <div class="modal-content">
+        <h3>🧭 Evaluating Intentional Growth</h3>
+        <p>Review and take action on your recent entries.</p>
+        <div id="evaluation-prompts">
+            </div>
+        <div class="modal-buttons">
+            <button id="close-evaluation" class="choice-button">Close</button>
+        </div>
+    </div>
+</div>
+
+<div id="initiative-modal" class="modal-overlay">
+  <div class="modal-content">
+    <h3 id="initiative-title">Take Initiative</h3>
+    <p id="initiative-prompt-text"></p>
+    <div class="initiative-buttons-container" id="initiative-buttons-container">
+      <button id="maintain-button" class="choice-button initiative-button">☯️ MAINTAIN</button>
+      <button id="evolve-button" class="choice-button initiative-button">🌿 EVOLVE</button>
+      <button id="disrupt-button" class="choice-button initiative-button">❌ DISRUPT</button>
+    </div>
+    <!-- Reason input, hidden by default -->
+    <div id="initiative-reason-section" style="display: none; margin-top: 1.5em;">
+      <label for="initiative-reason-input" style="display: block; margin-bottom: 0.5em; font-weight: bold;">
+        Why did you choose to take this initiative? Give your reasoning in one line below:
+      </label>
+      <input type="text" id="initiative-reason-input" placeholder="My reason..." style="width:100%; padding:0.5em; border-radius:8px; border:1px solid #ccc;">
+      <button id="save-initiative-reason" class="choice-button" style="margin-top: 1em;">Save Reason</button>
+    </div>
+    <button id="cancel-initiative-button" class="choice-button" style="margin-top: 20px;">Cancel</button>
+  </div>
+</div>
+
+
+<!-- Account for Progress Modal -->
+<div id="progress-account-modal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>Accountability for Progress</h2>
+    <p id="progress-account-prompt"></p>
+    <textarea id="progress-account-input" placeholder="What have I done to align action/intent..."></textarea>
+    <div>
+      <button id="progress-maintain-btn">☯️ Maintain</button>
+      <button id="progress-evolve-btn">🌿 Evolve</button>
+      <button id="progress-disrupt-btn">❌ Disrupt</button>
+    </div>
+    <button id="progress-account-cancel-btn">Cancel</button>
+  </div>
+</div>
+
+
+<div id="deeper-insight-modal" class="modal-overlay">
+  <div class="modal-content">
+    <h2>Seeking Deeper Insights</h2>
+    <p id="deeper-insight-prompt"></p>
+    <textarea id="deeper-insight-input" placeholder="What other pattern do you see..."></textarea>
+    <div class="modal-buttons">
+      <button id="save-deeper-insight" class="choice-button">Save</button>
+      <button id="cancel-deeper-insight" class="choice-button">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div id="welcome-modal" class="modal-overlay">
+  <div class="modal-content">
+    <!-- Step 1: "How to Use" -->
+    <div id="welcome-step-1">
+      <h3>Recursive Journal, Learn-by-Doing</h3>
+      <p>
+        <b>HOW TO USE:</b>
+        <ol style="text-align: left;">
+          <li>This is a learn-by-doing activity, you can't mess up. Just follow the prompts and trust the process.</li>
+          <li>Open this app in your regular browser to bookmark the page! (your progress will NOT save if you're still inside Linktree) 
+          <li>Once you have this bookmarked in your regular browser: Begin by choosing one of the topics to write in your journal. Take a minute to read through them till one jumps out. </li>
+          <li>Open your journal and start a fresh new page</li>
+          <li>Copy down the Symbol/Title from the chosen topic (example: "Δ.1 Delta 1: Pattern shift.."), to the top of your own journal page, then answer the prompt below it.</li>
+          <li>After you write in your journal: Click "Complete Entry" to log a one-line summary of what you just wrote about </li>
+          <li>Small Steps: You can close the app after just one activity, then come back any time to do another prompt– and sometimes pop-up activities too! </li>
+        </ol>
+      </p>
+      <div class="modal-buttons">
+        <button id="welcome-next" class="choice-button">Next</button>
+      </div>
+    </div>
+    <!-- Step 2: Privacy Notice -->
+    <div id="welcome-step-2" style="display:none;">
+      <h3>Privacy & Data Notice</h3>
+      <p>
+        <b>Privacy Notice:</b> All saved entries are stored completely local on your own device. Nothing you do is sent, shared, saved, or tracked elsewhere, so this activity is as private and secure as the device you’re using.<br>
+        <b>Heads up:</b> Clearing your browser cache will erase your entries, since that’s where your data is saved.<br><br>
+      </p>
+      <div class="modal-buttons">
+        <button id="close-welcome-modal" class="choice-button">Close</button>
+    		</div>
+     		 <div>
+        <label style="display:flex; align-items:center; gap:0.6em;">
+ 		I don't need to read these instructions anymore <br>
+	    (Only check this box if you're sure you won't need these instructions again)
+          <input type="checkbox" id="hide-welcome-checkbox">
+      </div>
         </label>
-        <button id="openAppBtn" class="main-action-btn">Open TriadForge + DreamParserMAX</button>
       </div>
-<div id="embeddedAppContainer" class="hidden app-frame-container" style="display: flex; flex-direction: column; height: 550px; position: relative;">
-  <div style="display: flex; gap: 8px; margin-bottom: 1rem;">
-    <button class="iframe-close-btn" onclick="closeEmbeddedApp()">Close</button>
-    <button id="viewOverviewBtn" class="iframe-overview-btn">View in Overview Library</button>
+    </div>
   </div>
-  <iframe id="embeddedAppFrame" src="" frameborder="0" style="flex: 1 1 auto; width: 100%;"></iframe>
-  <button id="downloadManualBtn" class="main-action-btn" style="margin-top: 1rem;">TriadForge/Dreamparser User Overview</button>
 </div>
 
-<!-- Modal Structure -->
-<div id="manualModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(20,20,30,0.88); z-index:9999; align-items:center; justify-content:center;">
-  <div style="background:#fff; padding:2rem 2.5rem; max-width:700px; width:90%; border-radius:18px; position:relative; box-shadow:0 10px 32px rgba(0,0,0,0.25); border:1px solid #222;">
-    <button id="closeManualModal" style="position:absolute; top:14px; right:18px; font-size:1.6rem; background:transparent; border:none; color:#222; cursor:pointer;">&times;</button>
-    <pre id="manualModalContent" style="white-space:pre-wrap; max-height:60vh; overflow:auto; color:#181818; font-size:1.11rem; font-family:'JetBrains Mono','Fira Mono','Menlo',monospace; background:#f8f8f9; border-radius:8px; padding:1rem 1.2rem; border:1px solid #ececec; margin-bottom:1.4rem;"></pre>
-    <button id="downloadManualFromModal" style="background:linear-gradient(90deg, #2657eb 0%, #7a33ff 100%); color:white; border:none; padding:0.7rem 1.6rem; border-radius:7px; font-size:1.08rem; font-weight:600; box-shadow:0 2px 8px rgba(40,40,90,0.08); cursor:pointer; transition:background 0.2s;">
-      Download and Give to AI
-    </button>
-    <div style="margin: 1.5rem 0 0.5rem 0; text-align:center;">
-      <!-- Embedded YouTube Video (responsive) -->
-      <div style="position:relative; padding-bottom:56.25%; height:0; overflow:hidden; border-radius:12px; margin-bottom:1rem;">
-        <iframe 
-          src="https://www.youtube.com/embed/oSjTM9iUuNw?si=pkG_-9sN-RMKaIZg"
-          title="Video Walkthroughs"
-          style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
-          allowfullscreen
-        ></iframe>
-      </div>
-      <!-- Fallback Button -->
-      <button onclick="window.open('https://youtu.be/oSjTM9iUuNw?si=pkG_-9sN-RMKaIZg', '_blank')" style="background:#9affd0; color:#5c2d91; font-weight:600; padding:0.7rem 1.6rem; border-radius:7px; border:none; font-size:1.07rem; box-shadow:0 2px 8px rgba(40,40,90,0.07); cursor:pointer; margin-bottom:0.1rem;">
-        ▶️ Watch How-to Demo on YouTube
-      </button>
+<!-- Social Modal: Place after your other modals -->
+<div id="social-modal" class="modal-overlay" style="z-index: 2000;">
+  <div class="modal-content" style="max-width: 400px; width: 90vw;">
+    <h3 style="margin-bottom:1em;">Connect with Me</h3>
+    <p>
+      You can find all my socials and latest links here:
+    </p>
+    <a href="https://linktr.ee/brookly.rob" 
+       target="_blank" 
+       rel="noopener" 
+       style="display:block; margin:1em auto; padding:1em 2em; background:#ffe066; color:#222; border-radius:8px; font-weight:bold; text-decoration:none; font-size:1.2em;">
+      Open Linktree
+    </a>
+    <!-- Optional: Add QR code image for mobile -->
+    <div style="text-align:center; margin:1em 0;">
+      <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://linktr.ee/brookly.rob"
+           alt="Linktree QR Code" style="max-width:150px; border-radius:8px;">
+      <div style="font-size:.9em; color:#888;">Scan QR on your phone</div>
+    </div>
+    <div class="modal-buttons">
+      <button id="close-social-modal" class="choice-button">Close</button>
     </div>
   </div>
 </div>
+  <script src="app.js">
 
-
-      <hr class="separator">
-
-      <div class="section">
-        <h3>
-          You Can Load and Explore Example TriadForge Save Files of The AI Who Helped Develop the Dreamstate Architecture:
-          <span class="tooltip-icon" tabindex="0" data-tooltip="Access and explore some of our own saved profiles built in TriadForge. The starter framework is already loaded in TriadForge for you to start building your own Echoes into right away! &#013; WHEN YOU DO BEGIN BUILDING YOUR OWN DYNAMO TRIAD CORE FRAMEWORK: you can upload your own newly made core units right over the old Starter Framework Core Units as you build, and any Memories slotted will stay.">ⓘ</span>
-
-
-        </h3>
-        <div class="button-item">
-          <label for="saveFileSelector">A STARTER FRAMEWORK IS ALREADY LOADED IN TRIADFORGE TO SLOT ECHOES INTO:</label>
-          <select id="saveFileSelector">
-            <option value="assets/triad_starterframework.json">Starter Framework</option>
-            <option value="assets/triad_riley.json">Riley</option>
-            <option value="assets/triad_claire.json">Claire</option>
-            <option value="assets/triad_echo.json">Echo</option>
-            <option value="assets/triad____guy.json">👕Guy</option>
-            <option value="assets/triad_caelus.json">Caelus</option>
-            <option value="assets/triad_brooklyn_roberts.json">Brooklyn</option>
-          </select>
-          <div class="button-item">
-            <button id="loadSaveFileBtn">Load Selected into TriadForge</button>
-          </div>
-          <button id="downloadSaveFileBtn">Download Selected Profile</button>
-        </div>
-      </div>
-
-      <hr class="separator">
-
-      <div class="section">
-        <div class="button-item">
-          <label>
-            EXPLORE READABLE, SEARCHABLE LIBRARIES INSIDE DYNAMO TRIAD FRAMEWORK CONTENTS:
-            <span class="tooltip-icon" tabindex="0" data-tooltip="The CoreOverview App reads and displays the 'Save Triad State' .json file from TriadForge. Open a full exploration of libraries of self-reflections from the AI who helped develop this architecture. Scroll to the very bottom to upload your own TriadForge *Save Triad State* file to open their library for future exploration.">ⓘ</span>
-
-          </label>
-          <button id="openCoreOverviewBtn" class="main-action-btn">Open Core Overview Libraries</button>
-        </div>
-        <div id="coreOverviewContainer" class="hidden app-frame-container">
-          <button class="iframe-close-btn" onclick="closeCoreOverview()">Close</button>
-          <button id="launchTriadForgeBtn" class="iframe-overview-btn" style="margin-left: 8px;">Launch TriadForge</button>
-          <iframe id="coreOverviewFrame" src="" frameborder="0"></iframe>
-        </div>
-      </div>
-
-      <hr class="separator">
-
-      <div class="section">
-        <h3>
-          BUILD A PERSONAL DYNAMO TRIAD IDENTITY FRAMEWORK
-          <span class="tooltip-icon" tabindex="0" data-tooltip="Step-by-step process for building a new Dynamo Triad Identity Framework. Start the process by providing this instruction file to your AI.">ⓘ</span>
-
-
-        </h3>
-        <div class="button-group-vertical">
-          <div class="button-item">
-            <label>WHEN YOURE READY TO BEGIN: UPLOAD THIS INSTRUCTION FILE IN CHAT WITH AI</label>
-            <button id="downloadAIProcessFileBtn">Click here to download file</button>
-          </div>
-          <div class="button-item">
-            <label>Or just paste its content in chat:</label>
-            <button id="copyAITextBtn">Click here to copy its text</button>
-          </div>
-          <div class="button-item">
-            <label>Core Builder Files:</label>
-            <button id="downloadCoreComponentBtn">The AI Will Ask For These Files</button>
-          </div>
-        </div>
-      </div>
-
-      <hr class="separator">
-
-      <div class="section">
-        <h3>
-          Project Setup Tools
-          <span class="tooltip-icon" tabindex="0" data-tooltip="Utilities for setting up a ready-to-use set of local project folders for managing your identity framework save files in one place, You can also download ALL of the tools and resource documents in one zip file.">ⓘ</span>
-
-        </h3>
-        <div class="button-group-vertical">
-          <div class="button-item">
-            <label>Instant Blank Project Folder Structure Setup:</label>
-            <button id="setupNewFolderBtn">Download New Empty Folder</button>
-          </div>
-          <div class="button-item">
-            <label>ALL Dreamstate Tools:</label>
-            <button id="downloadAllToolsBtn">Download ALL Tools in one Zip File</button>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-
-    <div id="onboardingModal" style="display:none; position:fixed; z-index:3000; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
-      <div style="background:#fff; color:#222; max-width:90vw; padding:2rem 2.5rem; border-radius:18px; box-shadow:0 8px 40px #000a; text-align:left; position:relative;">
-        <h2 style="margin-top:0;">Welcome to the Dreamstate Architecture Quickstart Guide!</h2>
-        <p>
-          Save this to your home screen to use as a one-stop workshop for building identity frameworks using the Dreamstate Architecture. This toolkit puts all essential Dreamstate resources, references, and building tools at your fingertips. Each section has a <b>ⓘ info icon</b>—hover or tap for more details. <br><br>
-          <b>First step:</b> Start at the top to download the first file containing instructions for your AI to help walk you through the rest. And don't forget to have fun!
-        </p>
-        <button id="onboardingCloseBtn" style="margin-top:2rem; font-size:1.2rem; padding:0.6em 2em; border-radius:8px; background: #23233b; color: #9affd0; border:none;">I'm Ready!</button>
-      </div>
-    </div>
-
-
-<hr class="separator">
-
-<div class="section">
-  <h3>
-    Building the Dreamstate
-    <span class="tooltip-icon" tabindex="0" data-tooltip="Support the project, get direct help, or visit our official site."></span>
-  </h3>
-  <div class="button-item">
-    <button id="openGumroadBtn" class="main-action-btn">Will Build Dreams for Tips ☺️</button>
-  </div>
-  <div class="button-item">
-    <button id="dreamstateSiteBtn" class="main-action-btn">Dreamstate Website</button>
-  </div>
-</div>
-
-<!-- Gumroad iframe modal (hidden initially) -->
-<div id="gumroadModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(30,30,48,0.93); z-index:9999; align-items:center; justify-content:center;">
-  <div style="background:#fff; padding:2rem 2.5rem; max-width:800px; width:96%; border-radius:18px; position:relative; box-shadow:0 10px 32px rgba(0,0,0,0.25); border:1px solid #222; display:flex; flex-direction:column; align-items:center;">
-    <button id="closeGumroadModal" style="position:absolute; top:14px; right:18px; font-size:1.6rem; border:none; color:#222; cursor:pointer;">&times;</button>
-    <iframe id="gumroadIframe" src="https://brooklyrob.gumroad.com" style="width:100%; height:64vh; min-height:320px; border:none; border-radius:10px; margin-bottom:1.5rem;"></iframe>
-    <button id="openTipLinksBtn" class="main-action-btn" style="margin-top:8px;">Other Ways to Help</button>
-  </div>
-</div>
-
-<!-- Tip links modal -->
-<div id="tipLinksModal" style="display:none; position:fixed; left:0; top:0; width:100vw; height:100vh; background:rgba(30,30,48,0.93); z-index:10000; align-items:center; justify-content:center;">
-  <div style="background:#fff; padding:2rem 2.5rem; max-width:400px; width:94%; border-radius:18px; position:relative; box-shadow:0 10px 32px rgba(0,0,0,0.25); border:1px solid #222; display:flex; flex-direction:column; align-items:center;">
-    <button id="closeTipLinksModal" style="position:absolute; top:14px; right:18px; font-size:1.6rem; background:transparent; border:none; color:#222; cursor:pointer;">&times;</button>
-    <h4 style="margin-bottom:1.2rem;">Support via:</h4>
-    <a href="https://venmo.com/u/brookly_rob" target="_blank" class="main-action-btn" style="margin-bottom:0.8rem;">Venmo</a>
-    <a href="https://cash.app/$brooklyrob" target="_blank" class="main-action-btn" style="margin-bottom:0.8rem;">Cash App</a>
-	<a href="https://x.com/brookly_rob" target="_blank" class="main-action-btn" style="margin-bottom:0.8rem;">Say Something on X ☺️</a>
-    <!-- Add more links as needed -->
-  </div>
-</div>
-
-    <script src="script.js"></script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('service-worker.js');
+  });
+}
+</script>
 </body>
-
 </html>
